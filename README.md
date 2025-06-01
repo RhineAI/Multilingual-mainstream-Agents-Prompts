@@ -1,14 +1,18 @@
 # Multilingual mainstream Agents Prompts
 
-Over a dozen versions of Prompts containing mainstream AI Agents tools or IDE, making it more convenient for everyone to learn
+Over a dozen versions of Prompts containing mainstream AI Agents tools or IDE such as [Cursor](https://www.cursor.com/) and [Manus](https://manus.im/), making it more convenient for everyone to learn
 
-Forked from the upstream repository, all content is automatically translated using Claude 4 Opus model through configured GitHub Actions CI. When new files are committed to any language folder, translation workflow is automatically triggered to synchronize across all language directories.
+Forked from the upstream repository, all content is automatically translated using [Claude 4 Opus](https://www.anthropic.com/news/claude-4) model through configured [GitHub Actions CI](https://docs.github.com/en/actions). When new files are committed to any language folder, translation workflow is automatically triggered to synchronize across all language directories.
+
+<br/>
+
+`Disclaimer` We only provide translation services, and all translated content is for academic research and personal learning reference only. The original source of the translated content comes from third parties, and I cannot verify the legality, authenticity, and copyright ownership of the original content. Users should judge the legality of the content themselves and bear corresponding risks. I do not assume any responsibility for the source, copyright status, or accuracy of the original content, nor do I assume responsibility for any direct or indirect losses or legal disputes arising from the use of translated content. Using this translated content is deemed as understanding and agreeing to the above disclaimer terms. If the original content involves copyright disputes or other legal issues, please handle them yourself. Please contact us for deletion if there is any infringement.
 
 <br/>
 <br/>
 <br/>
 
-## **FULL v0, Cursor, Manus, Same.dev, Lovable, Devin, Replit Agent, Windsurf Agent, VSCode Agent, Dia Browser & Trae AI (And other Open Sourced) System Prompts, Tools & AI Models**  
+## **Cursor, Manus, FULL v0, Same.dev, Lovable, Devin, Replit Agent, Windsurf Agent, VSCode Agent, Dia Browser & Trae AI (And other Open Sourced) System Prompts, Tools & AI Models**  
 
 (All the published system prompts are extracted by myself, except the already open sourced ones, Manus and Dia, which are contributions)
 
