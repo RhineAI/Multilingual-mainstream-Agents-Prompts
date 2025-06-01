@@ -141,15 +141,11 @@ def translate_directory(from_dir, to_language):
     }
 
 
-def main():
-    for lang_code, _ in language_directories:
-        if lang_code == 'en-US':
-            continue
-        print(f"Translating en-US to {lang_code}\n")
-        translate_directory("en-US", lang_code)
-        print(f"Finished translating en-US to {lang_code}\n\n\n")
-
-
 if __name__ == "__main__":
-    # main()
-    translate_directory("en-US", "ja-JP")
+    # translate_directory("en-US", "zh-CN")
+    # translate_directory("en-US/Cursor Prompts", "es-ES")
+    # translate_directory("en-US/Cursor Prompts", "fr-FR")
+    # translate_directory("en-US/Cursor Prompts", "de-DE")
+    # translate_directory("en-US/Cursor Prompts", "zh-HK")
+    # translate_directory("en-US/Cursor Prompts", "ja-JP")
+    translate_directory("en-US/Cursor Prompts", "pt-BR")

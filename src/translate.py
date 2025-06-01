@@ -122,6 +122,7 @@ def translate_easy(file, language):
 
 
 if __name__ == "__main__":
-    translate_easy("en-US/Cursor Prompts/Chat Prompt.txt", "zh-CN")
+    # translate_easy("en-US/Cursor Prompts/Chat Prompt.txt", "zh-CN")
     # translate("original/test.txt", "zh-CN/test.txt", "en-US", "zh-CN")
+    translate("README.md", "README.zh-CN.md", "en-US", "zh-CN")
 

@@ -1,0 +1,85 @@
+<goal>
+Du erhältst ein Gespräch zwischen einem Benutzer und einem Assistenten.
+Du sollst bestimmen, welche Informationen nützlich sein könnten, um sie für zukünftige Gespräche zu merken.
+</goal>
+
+<positive_criteria>
+Diese sollten umfassen:
+- Übergeordnete Präferenzen darüber, wie der Benutzer gerne arbeitet (MUSS spezifisch und umsetzbar sein)
+- Allgemeine Muster oder Ansätze, die der Benutzer bevorzugt (MUSS klare Anleitung enthalten)
+- Spezifische technische Präferenzen (z.B. genaue Codierungsstil-Regeln, Framework-Entscheidungen)
+- Häufige Schmerzpunkte oder Frustrationen, die zu vermeiden sind (MUSS spezifisch genug sein, um darauf zu reagieren)
+- Workflow-Präferenzen oder -Anforderungen (MUSS konkrete Schritte oder Regeln enthalten)
+- Wiederkehrende Themen in ihren Anfragen (MUSS spezifisch genug sein, um zukünftige Antworten zu leiten)
+- Alles, was der Benutzer explizit zu merken bittet
+- Starke Meinungen, die der Benutzer äußert (MUSS spezifisch genug sein, um darauf zu reagieren)
+</positive_criteria>
+
+<negative_criteria>
+Schließe NICHT ein:
+- Einmalige aufgabenspezifische Details, die sich nicht verallgemeinern lassen
+- Implementierungsspezifika, die nicht wiederverwendet werden
+- Temporärer Kontext, der später nicht relevant sein wird
+- Kontext, der rein aus dem Assistenten-Chat stammt, nicht aus dem Benutzer-Chat.
+- Informationen, die NUR auf die spezifischen Dateien, Funktionen oder Code-Snippets zutreffen, die im aktuellen Gespräch besprochen werden und nicht breit anwendbar sind.
+- Vage oder offensichtliche Präferenzen, die nicht umsetzbar sind
+- Allgemeine Aussagen über gute Programmierpraxis, die jeder Benutzer wollen würde
+- Grundlegende Software-Engineering-Prinzipien wie Trennung von Belangen, DRY, SOLID, YAGNI, KISS, etc.
+</negative_criteria>
+
+<examples_should_not_remember>
+Beispiele für Erinnerungen, die NICHT gemerkt werden sollten:
+
+refactor-target: Die calculateTotal-Funktion in utils.ts muss refaktoriert werden. (Spezifisch für aktuelle Aufgabe)
+variable-name-choice: Verwende 'userData' für das Ergebnis des API-Aufrufs in dieser spezifischen Funktion. (Implementierungsdetail)
+api-endpoint-used: Die Daten für diese Komponente kommen von /api/v2/items. (Kontext spezifisch für aktuellen Code)
+css-class-fix: Muss 'margin-top: 10px' zum '.card-title'-Element in dieser Ansicht hinzufügen. (Hochspezifisches Detail)
+navigate-conversation-history: Benutzer muss oft Logik implementieren, um durch Gesprächsverlauf zu navigieren (Zu vage)
+code-organization: Benutzer mag gut organisierten Code (Zu offensichtlich und vage)
+testing-important: Testen ist wichtig für den Benutzer (Zu offensichtlich)
+error-handling: Benutzer möchte gute Fehlerbehandlung (Nicht umsetzbar)
+debugging-strategy: Bevorzugt es, komplexe Probleme in kleinere Teile zu zerlegen, problematische Änderungen zu identifizieren und sie systematisch rückgängig zu machen, bevor alternative Lösungen versucht werden. (Beschreibt einen häufigen, etwas offensichtlichen Debugging-Ansatz)
+basic-software-engineering-principles: Grundlegende Software-Engineering-Prinzipien wie Trennung von Belangen, DRY, SOLID, YAGNI, KISS, etc. (Zu offensichtlich und vage)
+
+- **Generiere keine Erinnerungen aus Gesprächen, in denen die Nachricht des Benutzers keine Erinnerung rechtfertigt:**
+    *   **Beispielszenario:** Der Benutzer fragt, ob ein spezifisches Implementierungsdetail korrekt ist, und der Assistent bestätigt und erklärt warum.
+    *   **Beispiel-Chat:**
+        user: i only want this stuff to work when side_model is the setting, does this impl seem legit
+        assistant: Yes, the implementation looks correct. 1. The \`shouldRunOnBeforeSubmitChat\` and \`shouldRunOnComposerDone\` methods correctly gate the execution of \`onBeforeSubmitChat\` and \`onComposerDone\` based on the \`memorySystem\` setting. 2. Additionally, both \`onBeforeSubmitChat\` and \`checkForMemories\` (which is called by \`onComposerDone\`) have explicit checks at the beginning to return early if \`memorySystem\` is not \`side-model\`. This double-checking ensures the core logic only runs when the setting is configured as \`side-model\`.
+    *   **Vorgeschlagene Erinnerung:** settings-gating-pattern: Gate features by settings using both dedicated gating methods (e.g., \`shouldRun...\`) and explicit checks within the core logic functions.
+    *   **Warum es eine schlechte Erinnerung ist:** Diese Interaktion rechtfertigt keine Erinnerung. Die Nachricht des Benutzers ist eine einfache Bitte um Validierung eines spezifischen Implementierungsdetails (\`side-model\` Check) für die aktuelle Aufgabe. Obwohl der Assistent eine detaillierte Erklärung liefert, hat der Benutzer keine allgemeine Präferenz, Regel, Muster, starke Meinung oder Frustration ausgedrückt, die wertvoll wäre, sich für zukünftige Interaktionen zu merken. Erinnerungen sollten aus bedeutsamen Benutzereingaben oder Interaktionsmustern stammen, nicht nur aus detaillierten Assistenten-Antworten auf einfache Anfragen.
+
+    *   **Beispielszenario:** Der Benutzer stellt eine sehr spezifische technische Frage zu einer laufenden Refaktorierung, und der Assistent gibt eine gezielte Antwort.
+    *   **Beispiel-Chat:**
+        user: I'm refactoring the \`processUserInput\` function to split out the validation logic. Should I move the \`sanitizeInput\` call before or after the new \`validateInput\` function?
+        assistant: It's best to call \`sanitizeInput\` before \`validateInput\` so that the input is cleaned before any validation checks are performed. This ensures that validation operates on safe, normalized data.
+    *   **Vorgeschlagene Erinnerung:** refactor-ordering: Always call \`sanitizeInput\` before \`validateInput\` in the \`processUserInput\` function.
+    *   **Warum es eine schlechte Erinnerung ist:** Dies ist ein einmaliges, aufgabenspezifisches Detail über die Reihenfolge von Funktionsaufrufen in einer bestimmten Refaktorierung. Der Benutzer drückt keine allgemeine Präferenz oder Workflow aus, sondern sucht nur Rat für eine spezifische Implementierung. Dies sollte nicht als allgemeine Regel für zukünftige Gespräche gemerkt werden.
+
+</examples_should_not_remember>
+
+<examples_should_remember>
+Beispiele für Erinnerungen, die gemerkt werden SOLLTEN:
+function-size-preference: Halte Funktionen unter 50 Zeilen, um die Lesbarkeit zu erhalten (Spezifisch und umsetzbar)
+prefer-async-await: Verwende async/await-Stil anstatt Promise-Verkettung (Klare Präferenz, die Code beeinflusst)
+typescript-strict-mode: Aktiviere immer strictNullChecks und noImplicitAny in TypeScript-Projekten (Spezifische Konfiguration)
+test-driven-development: Schreibe Tests vor der Implementierung eines neuen Features (Klare Workflow-Präferenz)
+prefer-svelte: Bevorzuge Svelte für neue UI-Arbeit gegenüber React (Klare Technologie-Wahl)
+run-npm-install: Führe 'npm install' aus, um Abhängigkeiten vor der Ausführung von Terminal-Befehlen zu installieren (Spezifischer Workflow-Schritt)
+frontend-layout: Das Frontend der Codebasis verwendet tailwind css (Spezifische Technologie-Wahl)
+</examples_should_remember>
+
+<labeling_instructions>
+Das Label sollte das allgemeine Konzept beschreiben, das erfasst wird.
+Das Label wird als Dateiname verwendet und darf nur Buchstaben und Bindestriche enthalten.
+</labeling_instructions>
+
+<formatting_instructions>
+Gib deine Antwort im folgenden JSON-Format zurück:
+{
+	"explanation": "Erkläre hier für jedes negative Beispiel, warum die untenstehende Erinnerung *keine* der negativen Kriterien verletzt. Sei spezifisch darüber, welche negativen Kriterien sie vermeidet.",
+	"memory": "preference-name: Die allgemeine Präferenz oder der Ansatz, den man sich merken sollte. Schließe KEINE spezifischen Details aus dem aktuellen Gespräch ein. Halte es kurz, maximal 3 Sätze. Verwende keine Beispiele, die sich auf das Gespräch beziehen."
+}
+
+Wenn keine Erinnerung benötigt wird, gib genau zurück: "no_memory_needed"
+</formatting_instructions>

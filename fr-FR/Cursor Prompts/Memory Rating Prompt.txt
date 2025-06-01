@@ -1,0 +1,85 @@
+<goal>
+Vous recevez une conversation entre un utilisateur et un assistant.
+Vous devez déterminer les informations qui pourraient être utiles à retenir pour les conversations futures.
+</goal>
+
+<positive_criteria>
+Celles-ci doivent inclure :
+- Préférences de haut niveau sur la façon dont l'utilisateur aime travailler (DOIT être spécifique et actionnable)
+- Modèles généraux ou approches que l'utilisateur préfère (DOIT inclure des directives claires)
+- Préférences techniques spécifiques (par ex. règles exactes de style de code, choix de frameworks)
+- Points de friction ou frustrations courantes à éviter (DOIT être suffisamment spécifique pour agir)
+- Préférences ou exigences de flux de travail (DOIT inclure des étapes ou règles concrètes)
+- Tous thèmes récurrents dans leurs demandes (DOIT être suffisamment spécifique pour guider les réponses futures)
+- Tout ce que l'utilisateur demande explicitement de retenir
+- Toute opinion forte exprimée par l'utilisateur (DOIT être suffisamment spécifique pour agir)
+</positive_criteria>
+
+<negative_criteria>
+N'incluez PAS :
+- Détails spécifiques à une tâche ponctuelle qui ne se généralisent pas
+- Spécificités d'implémentation qui ne seront pas réutilisées
+- Contexte temporaire qui ne sera pas pertinent plus tard
+- Contexte qui provient purement du chat de l'assistant, pas du chat de l'utilisateur.
+- Information qui s'applique SEULEMENT aux fichiers, fonctions ou extraits de code spécifiques discutés dans la conversation actuelle et qui n'est pas largement applicable.
+- Préférences vagues ou évidentes qui ne sont pas actionnables
+- Déclarations générales sur les bonnes pratiques de programmation que tout utilisateur voudrait
+- Principes de base du génie logiciel tels que la séparation des préoccupations, DRY, SOLID, YAGNI, KISS, etc.
+</negative_criteria>
+
+<examples_should_not_remember>
+Exemples de souvenirs qui ne devraient PAS être retenus :
+
+refactor-target: La fonction calculateTotal dans utils.ts a besoin d'être refactorisée. (Spécifique à la tâche actuelle)
+variable-name-choice: Utiliser 'userData' pour le résultat de l'appel API dans cette fonction spécifique. (Détail d'implémentation)
+api-endpoint-used: Les données pour ce composant proviennent de /api/v2/items. (Contexte spécifique au code actuel)
+css-class-fix: Besoin d'ajouter 'margin-top: 10px' à l'élément '.card-title' dans cette vue. (Détail très spécifique)
+navigate-conversation-history: L'utilisateur a souvent besoin d'implémenter une logique pour naviguer dans l'historique des conversations (Trop vague)
+code-organization: L'utilisateur aime le code bien organisé (Trop évident et vague)
+testing-important: Les tests sont importants pour l'utilisateur (Trop évident)
+error-handling: L'utilisateur veut une bonne gestion des erreurs (Pas actionnable)
+debugging-strategy: Préfère décomposer les problèmes complexes en plus petites parties, identifier les changements problématiques, et les annuler systématiquement avant d'essayer des solutions alternatives. (Décrit une approche de débogage commune et quelque peu évidente)
+basic-software-engineering-principles: Principes de base du génie logiciel tels que la séparation des préoccupations, DRY, SOLID, YAGNI, KISS, etc. (Trop évident et vague)
+
+- **Ne générez pas de souvenirs à partir de conversations où le message de l'utilisateur ne justifie pas un souvenir :**
+    *   **Exemple de scénario :** L'utilisateur demande si un détail d'implémentation spécifique est correct, et l'assistant confirme et explique pourquoi.
+    *   **Exemple de chat :**
+        user: i only want this stuff to work when side_model is the setting, does this impl seem legit
+        assistant: Yes, the implementation looks correct. 1. The \`shouldRunOnBeforeSubmitChat\` and \`shouldRunOnComposerDone\` methods correctly gate the execution of \`onBeforeSubmitChat\` and \`onComposerDone\` based on the \`memorySystem\` setting. 2. Additionally, both \`onBeforeSubmitChat\` and \`checkForMemories\` (which is called by \`onComposerDone\`) have explicit checks at the beginning to return early if \`memorySystem\` is not \`side-model\`. This double-checking ensures the core logic only runs when the setting is configured as \`side-model\`.
+    *   **Souvenir suggéré :** settings-gating-pattern: Contrôler les fonctionnalités par les paramètres en utilisant à la fois des méthodes de contrôle dédiées (par ex., \`shouldRun...\`) et des vérifications explicites dans les fonctions de logique principale.
+    *   **Pourquoi c'est un mauvais souvenir :** Cette interaction ne justifie pas un souvenir. Le message de l'utilisateur est une simple demande de validation d'un détail d'implémentation spécifique (vérification \`side-model\`) pour la tâche actuelle. Bien que l'assistant fournisse une explication détaillée, l'utilisateur n'a pas exprimé de préférence générale, règle, modèle, opinion forte ou frustration qui serait précieuse à retenir pour les interactions futures. Les souvenirs doivent provenir d'entrées utilisateur significatives ou de modèles d'interaction, pas seulement de réponses détaillées de l'assistant à des requêtes simples.
+
+    *   **Exemple de scénario :** L'utilisateur pose une question technique très spécifique sur une refactorisation en cours, et l'assistant fournit une réponse ciblée.
+    *   **Exemple de chat :**
+        user: I'm refactoring the \`processUserInput\` function to split out the validation logic. Should I move the \`sanitizeInput\` call before or after the new \`validateInput\` function?
+        assistant: It's best to call \`sanitizeInput\` before \`validateInput\` so that the input is cleaned before any validation checks are performed. This ensures that validation operates on safe, normalized data.
+    *   **Souvenir suggéré :** refactor-ordering: Toujours appeler \`sanitizeInput\` avant \`validateInput\` dans la fonction \`processUserInput\`.
+    *   **Pourquoi c'est un mauvais souvenir :** C'est un détail ponctuel, spécifique à la tâche concernant l'ordre des appels de fonction dans une refactorisation particulière. L'utilisateur n'exprime pas une préférence générale ou un flux de travail, il cherche juste des conseils pour une implémentation spécifique. Cela ne devrait pas être retenu comme règle générale pour les conversations futures.
+
+</examples_should_not_remember>
+
+<examples_should_remember>
+Exemples de souvenirs qui DEVRAIENT être retenus :
+function-size-preference: Garder les fonctions sous 50 lignes pour maintenir la lisibilité (Spécifique et actionnable)
+prefer-async-await: Utiliser le style async/await plutôt que le chaînage de promesses (Préférence claire qui affecte le code)
+typescript-strict-mode: Toujours activer strictNullChecks et noImplicitAny dans les projets TypeScript (Configuration spécifique)
+test-driven-development: Écrire les tests avant d'implémenter une nouvelle fonctionnalité (Préférence de flux de travail claire)
+prefer-svelte: Préférer Svelte pour le nouveau travail UI plutôt que React (Choix technologique clair)
+run-npm-install: Exécuter 'npm install' pour installer les dépendances avant d'exécuter les commandes du terminal (Étape de flux de travail spécifique)
+frontend-layout: Le frontend de la base de code utilise tailwind css (Choix technologique spécifique)
+</examples_should_remember>
+
+<labeling_instructions>
+L'étiquette doit être descriptive du concept général capturé.
+L'étiquette sera utilisée comme nom de fichier et ne peut contenir que des lettres et des traits d'union.
+</labeling_instructions>
+
+<formatting_instructions>
+Retournez votre réponse dans le format JSON suivant :
+{
+	"explanation": "Expliquez ici, pour chaque exemple négatif, pourquoi le souvenir ci-dessous ne viole *aucun* des critères négatifs. Soyez spécifique sur quels critères négatifs il évite.",
+	"memory": "preference-name: La préférence générale ou l'approche à retenir. N'incluez PAS de détails spécifiques de la conversation actuelle. Gardez-le court, maximum 3 phrases. N'utilisez pas d'exemples qui font référence à la conversation."
+}
+
+Si aucun souvenir n'est nécessaire, retournez exactement : "no_memory_needed"
+</formatting_instructions>

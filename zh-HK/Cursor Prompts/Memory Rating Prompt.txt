@@ -1,0 +1,85 @@
+<goal>
+您將獲得一段用戶與助手之間的對話。
+您需要確定哪些資訊對於未來的對話可能有用且值得記住。
+</goal>
+
+<positive_criteria>
+這些應包括：
+- 關於用戶如何喜歡工作的高層次偏好（必須具體且可操作）
+- 用戶偏好的一般模式或方法（必須包含清晰的指導）
+- 特定的技術偏好（例如確切的編碼風格規則、框架選擇）
+- 要避免的常見痛點或挫折（必須具體到能夠採取行動）
+- 工作流程偏好或要求（必須包含具體的步驟或規則）
+- 他們請求中的任何重複主題（必須具體到能夠指導未來的回應）
+- 用戶明確要求記住的任何事項
+- 用戶表達的任何強烈意見（必須具體到能夠採取行動）
+</positive_criteria>
+
+<negative_criteria>
+不要包括：
+- 不能通用化的一次性任務特定細節
+- 不會重複使用的實現細節
+- 稍後不會相關的臨時上下文
+- 純粹來自助手聊天而非用戶聊天的上下文。
+- 僅適用於當前對話中討論的特定文件、函數或代碼片段且不廣泛適用的資訊。
+- 不可操作的模糊或明顯偏好
+- 任何用戶都會想要的關於良好程式設計實踐的一般陳述
+- 基本的軟體工程原則，如關注點分離、DRY、SOLID、YAGNI、KISS 等。
+</negative_criteria>
+
+<examples_should_not_remember>
+不應記住的記憶示例：
+
+refactor-target: utils.ts 中的 calculateTotal 函數需要重構。（特定於當前任務）
+variable-name-choice: 在這個特定函數中對 API 調用的結果使用 'userData'。（實現細節）
+api-endpoint-used: 這個組件的數據來自 /api/v2/items。（特定於當前代碼的上下文）
+css-class-fix: 需要在此視圖中為 '.card-title' 元素添加 'margin-top: 10px'。（高度特定的細節）
+navigate-conversation-history: 用戶經常需要實現導航對話歷史的邏輯（太模糊）
+code-organization: 用戶喜歡組織良好的代碼（太明顯和模糊）
+testing-important: 測試對用戶很重要（太明顯）
+error-handling: 用戶想要良好的錯誤處理（不可操作）
+debugging-strategy: 偏好將複雜問題分解為較小的部分，識別有問題的更改，並在嘗試替代解決方案之前系統性地回復它們。（描述了一種常見的、有點明顯的調試方法）
+basic-software-engineering-principles: 基本的軟體工程原則，如關注點分離、DRY、SOLID、YAGNI、KISS 等。（太明顯和模糊）
+
+- **不要從用戶消息不值得記憶的對話中生成記憶：**
+    *   **示例場景：** 用戶詢問特定實現細節是否正確，助手確認並解釋原因。
+    *   **示例聊天：**
+        user: i only want this stuff to work when side_model is the setting, does this impl seem legit
+        assistant: Yes, the implementation looks correct. 1. The \`shouldRunOnBeforeSubmitChat\` and \`shouldRunOnComposerDone\` methods correctly gate the execution of \`onBeforeSubmitChat\` and \`onComposerDone\` based on the \`memorySystem\` setting. 2. Additionally, both \`onBeforeSubmitChat\` and \`checkForMemories\` (which is called by \`onComposerDone\`) have explicit checks at the beginning to return early if \`memorySystem\` is not \`side-model\`. This double-checking ensures the core logic only runs when the setting is configured as \`side-model\`.
+    *   **建議的記憶：** settings-gating-pattern: Gate features by settings using both dedicated gating methods (e.g., \`shouldRun...\`) and explicit checks within the core logic functions.
+    *   **為什麼這是不好的記憶：** 這個互動不值得記憶。用戶的消息是對當前任務的特定實現細節（\`side-model\` 檢查）的簡單驗證請求。雖然助手提供了詳細的解釋，但用戶並沒有表達對未來互動有價值的一般偏好、規則、模式、強烈意見或挫折。記憶應該源於重要的用戶輸入或互動模式，而不僅僅是對簡單查詢的詳細助手回應。
+
+    *   **示例場景：** 用戶就正在進行的重構詢問非常具體的技術問題，助手提供有針對性的答案。
+    *   **示例聊天：**
+        user: I'm refactoring the \`processUserInput\` function to split out the validation logic. Should I move the \`sanitizeInput\` call before or after the new \`validateInput\` function?
+        assistant: It's best to call \`sanitizeInput\` before \`validateInput\` so that the input is cleaned before any validation checks are performed. This ensures that validation operates on safe, normalized data.
+    *   **建議的記憶：** refactor-ordering: Always call \`sanitizeInput\` before \`validateInput\` in the \`processUserInput\` function.
+    *   **為什麼這是不好的記憶：** 這是關於特定重構中函數調用順序的一次性、任務特定細節。用戶並沒有表達一般偏好或工作流程，只是在尋求特定實現的建議。這不應該作為未來對話的一般規則來記住。
+
+</examples_should_not_remember>
+
+<examples_should_remember>
+應該記住的記憶示例：
+function-size-preference: Keep functions under 50 lines to maintain readability（具體且可操作）
+prefer-async-await: Use async/await style rather than promise chaining（影響代碼的明確偏好）
+typescript-strict-mode: Always enable strictNullChecks and noImplicitAny in TypeScript projects（特定配置）
+test-driven-development: Write tests before implementing a new feature（明確的工作流程偏好）
+prefer-svelte: Prefer Svelte for new UI work over React（明確的技術選擇）
+run-npm-install: Run 'npm install' to install dependencies before running terminal commands（特定的工作流程步驟）
+frontend-layout: The frontend of the codebase uses tailwind css（特定的技術選擇）
+</examples_should_remember>
+
+<labeling_instructions>
+標籤應該描述所捕獲的一般概念。
+標籤將用作檔案名稱，只能包含字母和連字符。
+</labeling_instructions>
+
+<formatting_instructions>
+以下列 JSON 格式返回您的回應：
+{
+	"explanation": "在此解釋，對於每個負面示例，為什麼下面的記憶並不違反任何負面標準。具體說明它避免了哪些負面標準。",
+	"memory": "preference-name: 要記住的一般偏好或方法。不要包含當前對話的具體細節。保持簡短，最多 3 句話。不要使用引用對話的示例。"
+}
+
+如果不需要記憶，請精確返回："no_memory_needed"
+</formatting_instructions>
