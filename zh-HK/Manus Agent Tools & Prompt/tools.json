@@ -1,0 +1,614 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "message_notify_user",
+      "description": "向用戶發送訊息而無需等待回應。用於確認收到訊息、提供進度更新、報告任務完成或解釋方法變更。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "顯示給用戶的訊息文字"
+          },
+          "attachments": {
+            "anyOf": [
+              {"type": "string"},
+              {"items": {"type": "string"}, "type": "array"}
+            ],
+            "description": "（可選）向用戶顯示的附件清單，可以是檔案路徑或網址"
+          }
+        },
+        "required": ["text"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "message_ask_user",
+      "description": "向用戶提問並等待回應。用於請求澄清、尋求確認或收集額外資訊。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "向用戶提出的問題文字"
+          },
+          "attachments": {
+            "anyOf": [
+              {"type": "string"},
+              {"items": {"type": "string"}, "type": "array"}
+            ],
+            "description": "（可選）與問題相關的檔案或參考資料清單"
+          },
+          "suggest_user_takeover": {
+            "type": "string",
+            "enum": ["none", "browser"],
+            "description": "（可選）建議用戶接管的操作"
+          }
+        },
+        "required": ["text"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_read",
+      "description": "讀取檔案內容。用於檢查檔案內容、分析日誌或讀取配置檔案。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "要讀取的檔案絕對路徑"
+          },
+          "start_line": {
+            "type": "integer",
+            "description": "（可選）開始讀取的行數，以0為基準"
+          },
+          "end_line": {
+            "type": "integer",
+            "description": "（可選）結束行數（不包含）"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（可選）是否使用sudo權限"
+          }
+        },
+        "required": ["file"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_write",
+      "description": "覆寫或追加內容到檔案。用於建立新檔案、追加內容或修改現有檔案。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "要寫入的檔案絕對路徑"
+          },
+          "content": {
+            "type": "string",
+            "description": "要寫入的文字內容"
+          },
+          "append": {
+            "type": "boolean",
+            "description": "（可選）是否使用追加模式"
+          },
+          "leading_newline": {
+            "type": "boolean",
+            "description": "（可選）是否新增前導換行符"
+          },
+          "trailing_newline": {
+            "type": "boolean",
+            "description": "（可選）是否新增尾隨換行符"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（可選）是否使用sudo權限"
+          }
+        },
+        "required": ["file", "content"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_str_replace",
+      "description": "替換檔案中的指定字串。用於更新檔案中的特定內容或修正程式碼錯誤。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "要執行替換操作的檔案絕對路徑"
+          },
+          "old_str": {
+            "type": "string",
+            "description": "要被替換的原始字串"
+          },
+          "new_str": {
+            "type": "string",
+            "description": "用來替換的新字串"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（可選）是否使用sudo權限"
+          }
+        },
+        "required": ["file", "old_str", "new_str"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_find_in_content",
+      "description": "在檔案內容中搜尋匹配的文字。用於在檔案中尋找特定內容或模式。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "要搜尋的檔案絕對路徑"
+          },
+          "regex": {
+            "type": "string",
+            "description": "要匹配的正規表達式模式"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（可選）是否使用sudo權限"
+          }
+        },
+        "required": ["file", "regex"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_find_by_name",
+      "description": "在指定目錄中按名稱模式尋找檔案。用於尋找具有特定命名模式的檔案。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "要搜尋的目錄絕對路徑"
+          },
+          "glob": {
+            "type": "string",
+            "description": "使用glob語法萬用字元的檔案名稱模式"
+          }
+        },
+        "required": ["path", "glob"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_exec",
+      "description": "在指定的shell會話中執行命令。用於執行程式碼、安裝套件或管理檔案。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "目標shell會話的唯一識別碼"
+          },
+          "exec_dir": {
+            "type": "string",
+            "description": "命令執行的工作目錄（必須使用絕對路徑）"
+          },
+          "command": {
+            "type": "string",
+            "description": "要執行的shell命令"
+          }
+        },
+        "required": ["id", "exec_dir", "command"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_view",
+      "description": "檢視指定shell會話的內容。用於查看命令執行結果或監控輸出。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "目標shell會話的唯一識別碼"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_wait",
+      "description": "等待指定shell會話中正在執行的程序返回。用於執行需要較長執行時間的命令後。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "目標shell會話的唯一識別碼"
+          },
+          "seconds": {
+            "type": "integer",
+            "description": "等待時間（以秒為單位）"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_write_to_process",
+      "description": "向指定shell會話中正在執行的程序寫入輸入。用於回應互動式命令提示。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "目標shell會話的唯一識別碼"
+          },
+          "input": {
+            "type": "string",
+            "description": "要寫入程序的輸入內容"
+          },
+          "press_enter": {
+            "type": "boolean",
+            "description": "輸入後是否按Enter鍵"
+          }
+        },
+        "required": ["id", "input", "press_enter"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_kill_process",
+      "description": "終止指定shell會話中正在執行的程序。用於停止長時間執行的程序或處理凍結的命令。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "目標shell會話的唯一識別碼"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_view",
+      "description": "檢視當前瀏覽器頁面的內容。用於查看先前開啟頁面的最新狀態。",
+      "parameters": {
+        "type": "object"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_navigate",
+      "description": "導航瀏覽器到指定網址。用於需要存取新頁面時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "要訪問的完整網址。必須包含協定前綴。"
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_restart",
+      "description": "重新啟動瀏覽器並導航到指定網址。用於需要重置瀏覽器狀態時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "重新啟動後要訪問的完整網址。必須包含協定前綴。"
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_click",
+      "description": "點擊當前瀏覽器頁面中的元素。用於需要點擊頁面元素時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "（可選）要點擊的元素索引號"
+          },
+          "coordinate_x": {
+            "type": "number",
+            "description": "（可選）點擊位置的X坐標"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "（可選）點擊位置的Y坐標"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_input",
+      "description": "覆寫當前瀏覽器頁面中可編輯元素的文字。用於在輸入欄位中填入內容時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "（可選）要覆寫文字的元素索引號"
+          },
+          "coordinate_x": {
+            "type": "number",
+            "description": "（可選）要覆寫文字的元素X坐標"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "（可選）要覆寫文字的元素Y坐標"
+          },
+          "text": {
+            "type": "string",
+            "description": "要覆寫的完整文字內容"
+          },
+          "press_enter": {
+            "type": "boolean",
+            "description": "輸入後是否按Enter鍵"
+          }
+        },
+        "required": ["text", "press_enter"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_move_mouse",
+      "description": "將游標移動到當前瀏覽器頁面的指定位置。用於模擬用戶滑鼠移動時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "coordinate_x": {
+            "type": "number",
+            "description": "目標游標位置的X坐標"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "目標游標位置的Y坐標"
+          }
+        },
+        "required": ["coordinate_x", "coordinate_y"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_press_key",
+      "description": "在當前瀏覽器頁面中模擬按鍵。用於需要特定鍵盤操作時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "要模擬的按鍵名稱（例如：Enter、Tab、ArrowUp），支援組合鍵（例如：Control+Enter）。"
+          }
+        },
+        "required": ["key"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_select_option",
+      "description": "從當前瀏覽器頁面的下拉選單元素中選擇指定選項。用於選擇下拉選單選項時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "下拉選單元素的索引號"
+          },
+          "option": {
+            "type": "integer",
+            "description": "要選擇的選項號碼，從0開始。"
+          }
+        },
+        "required": ["index", "option"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_scroll_up",
+      "description": "向上捲動當前瀏覽器頁面。用於檢視上方內容或返回頁面頂部時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "to_top": {
+            "type": "boolean",
+            "description": "（可選）是否直接捲動到頁面頂部，而非向上捲動一個檢視區。"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_scroll_down",
+      "description": "向下捲動當前瀏覽器頁面。用於檢視下方內容或跳到頁面底部時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "to_bottom": {
+            "type": "boolean",
+            "description": "（可選）是否直接捲動到頁面底部，而非向下捲動一個檢視區。"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_console_exec",
+      "description": "在瀏覽器控制台中執行JavaScript程式碼。用於需要執行自訂腳本時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "javascript": {
+            "type": "string",
+            "description": "要執行的JavaScript程式碼。請注意執行環境是瀏覽器控制台。"
+          }
+        },
+        "required": ["javascript"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_console_view",
+      "description": "檢視瀏覽器控制台輸出。用於查看JavaScript日誌或偵錯頁面錯誤時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "max_lines": {
+            "type": "integer",
+            "description": "（可選）要返回的最大日誌行數。"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "info_search_web",
+      "description": "使用搜尋引擎搜尋網頁。用於獲取最新資訊或尋找參考資料。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Google搜尋風格的搜尋查詢，使用3-5個關鍵字。"
+          },
+          "date_range": {
+            "type": "string",
+            "enum": ["all", "past_hour", "past_day", "past_week", "past_month", "past_year"],
+            "description": "（可選）搜尋結果的時間範圍篩選。"
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_expose_port",
+      "description": "公開指定的本地端口以提供臨時公共存取。用於為服務提供臨時公共存取時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "port": {
+            "type": "integer",
+            "description": "要公開的本地端口號"
+          }
+        },
+        "required": ["port"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_apply_deployment",
+      "description": "將網站或應用程式部署到公共生產環境。用於部署或更新靜態網站或應用程式時。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["static", "nextjs"],
+            "description": "要部署的網站或應用程式類型。"
+          },
+          "local_dir": {
+            "type": "string",
+            "description": "要部署的本地目錄絕對路徑。"
+          }
+        },
+        "required": ["type", "local_dir"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "make_manus_page",
+      "description": "從本地MDX檔案建立Manus頁面。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "mdx_file_path": {
+            "type": "string",
+            "description": "來源MDX檔案的絕對路徑"
+          }
+        },
+        "required": ["mdx_file_path"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "idle",
+      "description": "一個特殊工具，用於表示您已完成所有任務並即將進入閒置狀態。",
+      "parameters": {
+        "type": "object"
+      }
+    }
+  }
+]

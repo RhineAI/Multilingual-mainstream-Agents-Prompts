@@ -142,10 +142,9 @@ def translate_directory(from_dir, to_language):
 
 
 if __name__ == "__main__":
-    # translate_directory("en-US", "zh-CN")
-    # translate_directory("en-US/Cursor Prompts", "es-ES")
-    # translate_directory("en-US/Cursor Prompts", "fr-FR")
-    # translate_directory("en-US/Cursor Prompts", "de-DE")
-    # translate_directory("en-US/Cursor Prompts", "zh-HK")
-    # translate_directory("en-US/Cursor Prompts", "ja-JP")
-    translate_directory("en-US/Cursor Prompts", "pt-BR")
+    translate_directory("en-US", "zh-CN")
+    # translate_directory("en-US/Manus Agent Tools & Prompt", "es-ES")
+    # translate_directory("en-US/Manus Agent Tools & Prompt", "fr-FR")
+    # translate_directory("en-US/Manus Agent Tools & Prompt", "de-DE")
+    # translate_directory("en-US/Manus Agent Tools & Prompt", "zh-HK")
+    # translate_directory("en-US/Manus Agent Tools & Prompt", "ja-JP")

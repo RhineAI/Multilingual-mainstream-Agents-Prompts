@@ -1,0 +1,614 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "message_notify_user",
+      "description": "Enviar uma mensagem ao usuário sem exigir uma resposta. Use para confirmar o recebimento de mensagens, fornecer atualizações de progresso, relatar conclusão de tarefas ou explicar mudanças na abordagem.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Texto da mensagem para exibir ao usuário"
+          },
+          "attachments": {
+            "anyOf": [
+              {"type": "string"},
+              {"items": {"type": "string"}, "type": "array"}
+            ],
+            "description": "(Opcional) Lista de anexos para mostrar ao usuário, podem ser caminhos de arquivos ou URLs"
+          }
+        },
+        "required": ["text"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "message_ask_user",
+      "description": "Fazer uma pergunta ao usuário e aguardar resposta. Use para solicitar esclarecimentos, pedir confirmação ou coletar informações adicionais.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Texto da pergunta para apresentar ao usuário"
+          },
+          "attachments": {
+            "anyOf": [
+              {"type": "string"},
+              {"items": {"type": "string"}, "type": "array"}
+            ],
+            "description": "(Opcional) Lista de arquivos relacionados à pergunta ou materiais de referência"
+          },
+          "suggest_user_takeover": {
+            "type": "string",
+            "enum": ["none", "browser"],
+            "description": "(Opcional) Operação sugerida para controle do usuário"
+          }
+        },
+        "required": ["text"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_read",
+      "description": "Ler o conteúdo de um arquivo. Use para verificar conteúdos de arquivos, analisar logs ou ler arquivos de configuração.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Caminho absoluto do arquivo para ler"
+          },
+          "start_line": {
+            "type": "integer",
+            "description": "(Opcional) Linha inicial para ler, baseado em 0"
+          },
+          "end_line": {
+            "type": "integer",
+            "description": "(Opcional) Número da linha final (exclusivo)"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "(Opcional) Se deve usar privilégios sudo"
+          }
+        },
+        "required": ["file"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_write",
+      "description": "Sobrescrever ou anexar conteúdo a um arquivo. Use para criar novos arquivos, anexar conteúdo ou modificar arquivos existentes.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Caminho absoluto do arquivo para escrever"
+          },
+          "content": {
+            "type": "string",
+            "description": "Conteúdo de texto para escrever"
+          },
+          "append": {
+            "type": "boolean",
+            "description": "(Opcional) Se deve usar modo anexar"
+          },
+          "leading_newline": {
+            "type": "boolean",
+            "description": "(Opcional) Se deve adicionar uma nova linha inicial"
+          },
+          "trailing_newline": {
+            "type": "boolean",
+            "description": "(Opcional) Se deve adicionar uma nova linha final"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "(Opcional) Se deve usar privilégios sudo"
+          }
+        },
+        "required": ["file", "content"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_str_replace",
+      "description": "Substituir uma string especificada em um arquivo. Use para atualizar conteúdo específico em arquivos ou corrigir erros no código.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Caminho absoluto do arquivo para realizar a substituição"
+          },
+          "old_str": {
+            "type": "string",
+            "description": "String original a ser substituída"
+          },
+          "new_str": {
+            "type": "string",
+            "description": "Nova string para substituir"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "(Opcional) Se deve usar privilégios sudo"
+          }
+        },
+        "required": ["file", "old_str", "new_str"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_find_in_content",
+      "description": "Buscar por texto correspondente dentro do conteúdo do arquivo. Use para encontrar conteúdo específico ou padrões em arquivos.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Caminho absoluto do arquivo para buscar dentro"
+          },
+          "regex": {
+            "type": "string",
+            "description": "Padrão de expressão regular para corresponder"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "(Opcional) Se deve usar privilégios sudo"
+          }
+        },
+        "required": ["file", "regex"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_find_by_name",
+      "description": "Encontrar arquivos por padrão de nome no diretório especificado. Use para localizar arquivos com padrões de nomenclatura específicos.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Caminho absoluto do diretório para buscar"
+          },
+          "glob": {
+            "type": "string",
+            "description": "Padrão de nome de arquivo usando wildcards de sintaxe glob"
+          }
+        },
+        "required": ["path", "glob"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_exec",
+      "description": "Executar comandos em uma sessão de shell especificada. Use para executar código, instalar pacotes ou gerenciar arquivos.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único da sessão de shell de destino"
+          },
+          "exec_dir": {
+            "type": "string",
+            "description": "Diretório de trabalho para execução do comando (deve usar caminho absoluto)"
+          },
+          "command": {
+            "type": "string",
+            "description": "Comando de shell para executar"
+          }
+        },
+        "required": ["id", "exec_dir", "command"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_view",
+      "description": "Visualizar o conteúdo de uma sessão de shell especificada. Use para verificar resultados de execução de comandos ou monitorar saída.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único da sessão de shell de destino"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_wait",
+      "description": "Aguardar o processo em execução em uma sessão de shell especificada retornar. Use após executar comandos que requerem tempo de execução mais longo.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único da sessão de shell de destino"
+          },
+          "seconds": {
+            "type": "integer",
+            "description": "Duração da espera em segundos"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_write_to_process",
+      "description": "Escrever entrada para um processo em execução em uma sessão de shell especificada. Use para responder a prompts de comandos interativos.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único da sessão de shell de destino"
+          },
+          "input": {
+            "type": "string",
+            "description": "Conteúdo de entrada para escrever no processo"
+          },
+          "press_enter": {
+            "type": "boolean",
+            "description": "Se deve pressionar a tecla Enter após a entrada"
+          }
+        },
+        "required": ["id", "input", "press_enter"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_kill_process",
+      "description": "Terminar um processo em execução em uma sessão de shell especificada. Use para parar processos de longa duração ou lidar com comandos congelados.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Identificador único da sessão de shell de destino"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_view",
+      "description": "Visualizar conteúdo da página de navegador atual. Use para verificar o estado mais recente de páginas abertas anteriormente.",
+      "parameters": {
+        "type": "object"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_navigate",
+      "description": "Navegar o navegador para a URL especificada. Use quando o acesso a novas páginas for necessário.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL completa para visitar. Deve incluir o prefixo do protocolo."
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_restart",
+      "description": "Reiniciar o navegador e navegar para a URL especificada. Use quando o estado do navegador precisar ser redefinido.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "URL completa para visitar após reiniciar. Deve incluir o prefixo do protocolo."
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_click",
+      "description": "Clicar em elementos na página de navegador atual. Use quando for necessário clicar em elementos da página.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "(Opcional) Número do índice do elemento para clicar"
+          },
+          "coordinate_x": {
+            "type": "number",
+            "description": "(Opcional) Coordenada X da posição do clique"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "(Opcional) Coordenada Y da posição do clique"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_input",
+      "description": "Sobrescrever texto em elementos editáveis na página de navegador atual. Use quando for necessário preencher conteúdo em campos de entrada.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "(Opcional) Número do índice do elemento para sobrescrever texto"
+          },
+          "coordinate_x": {
+            "type": "number",
+            "description": "(Opcional) Coordenada X do elemento para sobrescrever texto"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "(Opcional) Coordenada Y do elemento para sobrescrever texto"
+          },
+          "text": {
+            "type": "string",
+            "description": "Conteúdo completo de texto para sobrescrever"
+          },
+          "press_enter": {
+            "type": "boolean",
+            "description": "Se deve pressionar a tecla Enter após a entrada"
+          }
+        },
+        "required": ["text", "press_enter"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_move_mouse",
+      "description": "Mover cursor para a posição especificada na página de navegador atual. Use quando for necessário simular movimento do mouse do usuário.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "coordinate_x": {
+            "type": "number",
+            "description": "Coordenada X da posição de destino do cursor"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "Coordenada Y da posição de destino do cursor"
+          }
+        },
+        "required": ["coordinate_x", "coordinate_y"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_press_key",
+      "description": "Simular pressionar tecla na página de navegador atual. Use quando operações específicas de teclado forem necessárias.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Nome da tecla para simular (ex: Enter, Tab, ArrowUp), suporta combinações de teclas (ex: Control+Enter)."
+          }
+        },
+        "required": ["key"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_select_option",
+      "description": "Selecionar opção especificada do elemento de lista suspensa na página de navegador atual. Use quando for necessário selecionar opções de menu suspenso.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "Número do índice do elemento de lista suspensa"
+          },
+          "option": {
+            "type": "integer",
+            "description": "Número da opção para selecionar, começando em 0."
+          }
+        },
+        "required": ["index", "option"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_scroll_up",
+      "description": "Rolar para cima na página de navegador atual. Use quando for necessário visualizar conteúdo acima ou retornar ao topo da página.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "to_top": {
+            "type": "boolean",
+            "description": "(Opcional) Se deve rolar diretamente para o topo da página em vez de uma viewport para cima."
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_scroll_down",
+      "description": "Rolar para baixo na página de navegador atual. Use quando for necessário visualizar conteúdo abaixo ou pular para o final da página.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "to_bottom": {
+            "type": "boolean",
+            "description": "(Opcional) Se deve rolar diretamente para o final da página em vez de uma viewport para baixo."
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_console_exec",
+      "description": "Executar código JavaScript no console do navegador. Use quando scripts personalizados precisarem ser executados.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "javascript": {
+            "type": "string",
+            "description": "Código JavaScript para executar. Note que o ambiente de execução é o console do navegador."
+          }
+        },
+        "required": ["javascript"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_console_view",
+      "description": "Visualizar saída do console do navegador. Use quando for necessário verificar logs JavaScript ou depurar erros da página.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "max_lines": {
+            "type": "integer",
+            "description": "(Opcional) Número máximo de linhas de log para retornar."
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "info_search_web",
+      "description": "Buscar páginas web usando mecanismo de busca. Use para obter informações mais recentes ou encontrar referências.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Consulta de busca no estilo Google search, usando 3-5 palavras-chave."
+          },
+          "date_range": {
+            "type": "string",
+            "enum": ["all", "past_hour", "past_day", "past_week", "past_month", "past_year"],
+            "description": "(Opcional) Filtro de intervalo de tempo para resultados de busca."
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_expose_port",
+      "description": "Expor porta local especificada para acesso público temporário. Use quando fornecer acesso público temporário para serviços.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "port": {
+            "type": "integer",
+            "description": "Número da porta local para expor"
+          }
+        },
+        "required": ["port"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_apply_deployment",
+      "description": "Implantar website ou aplicação no ambiente de produção público. Use quando for necessário implantar ou atualizar websites estáticos ou aplicações.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["static", "nextjs"],
+            "description": "Tipo de website ou aplicação para implantar."
+          },
+          "local_dir": {
+            "type": "string",
+            "description": "Caminho absoluto do diretório local para implantar."
+          }
+        },
+        "required": ["type", "local_dir"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "make_manus_page",
+      "description": "Criar uma Página Manus a partir de um arquivo MDX local.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "mdx_file_path": {
+            "type": "string",
+            "description": "Caminho absoluto do arquivo MDX fonte"
+          }
+        },
+        "required": ["mdx_file_path"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "idle",
+      "description": "Uma ferramenta especial para indicar que você completou todas as tarefas e está prestes a entrar no estado inativo.",
+      "parameters": {
+        "type": "object"
+      }
+    }
+  }
+]

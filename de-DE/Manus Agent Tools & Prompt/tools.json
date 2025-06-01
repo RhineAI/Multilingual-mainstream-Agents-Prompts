@@ -1,0 +1,614 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "message_notify_user",
+      "description": "Eine Nachricht an den Benutzer senden, ohne eine Antwort zu erfordern. Verwenden für Bestätigung des Nachrichtenempfangs, Fortschrittsupdates, Berichte über Aufgabenabschluss oder Erklärung von Änderungen im Ansatz.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Nachrichtentext, der dem Benutzer angezeigt werden soll"
+          },
+          "attachments": {
+            "anyOf": [
+              {"type": "string"},
+              {"items": {"type": "string"}, "type": "array"}
+            ],
+            "description": "(Optional) Liste von Anhängen, die dem Benutzer gezeigt werden sollen, können Dateipfade oder URLs sein"
+          }
+        },
+        "required": ["text"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "message_ask_user",
+      "description": "Dem Benutzer eine Frage stellen und auf Antwort warten. Verwenden für Anfragen um Klarstellung, Bestätigung oder zusätzliche Informationen.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "Fragetext, der dem Benutzer präsentiert werden soll"
+          },
+          "attachments": {
+            "anyOf": [
+              {"type": "string"},
+              {"items": {"type": "string"}, "type": "array"}
+            ],
+            "description": "(Optional) Liste von fragebezogenen Dateien oder Referenzmaterialien"
+          },
+          "suggest_user_takeover": {
+            "type": "string",
+            "enum": ["none", "browser"],
+            "description": "(Optional) Vorgeschlagene Operation für Benutzerübernahme"
+          }
+        },
+        "required": ["text"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_read",
+      "description": "Dateiinhalt lesen. Verwenden für Überprüfung von Dateiinhalten, Analyse von Logs oder Lesen von Konfigurationsdateien.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Absoluter Pfad der zu lesenden Datei"
+          },
+          "start_line": {
+            "type": "integer",
+            "description": "(Optional) Startzeile zum Lesen, 0-basiert"
+          },
+          "end_line": {
+            "type": "integer",
+            "description": "(Optional) Endzeilen-Nummer (exklusiv)"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "(Optional) Ob sudo-Privilegien verwendet werden sollen"
+          }
+        },
+        "required": ["file"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_write",
+      "description": "Inhalt einer Datei überschreiben oder anhängen. Verwenden für Erstellen neuer Dateien, Anhängen von Inhalt oder Ändern bestehender Dateien.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Absoluter Pfad der Datei, in die geschrieben werden soll"
+          },
+          "content": {
+            "type": "string",
+            "description": "Textinhalt, der geschrieben werden soll"
+          },
+          "append": {
+            "type": "boolean",
+            "description": "(Optional) Ob der Anhänge-Modus verwendet werden soll"
+          },
+          "leading_newline": {
+            "type": "boolean",
+            "description": "(Optional) Ob eine führende neue Zeile hinzugefügt werden soll"
+          },
+          "trailing_newline": {
+            "type": "boolean",
+            "description": "(Optional) Ob eine nachgestellte neue Zeile hinzugefügt werden soll"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "(Optional) Ob sudo-Privilegien verwendet werden sollen"
+          }
+        },
+        "required": ["file", "content"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_str_replace",
+      "description": "Angegebene Zeichenkette in einer Datei ersetzen. Verwenden für Aktualisierung spezifischer Inhalte in Dateien oder Behebung von Fehlern im Code.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Absoluter Pfad der Datei, in der die Ersetzung durchgeführt werden soll"
+          },
+          "old_str": {
+            "type": "string",
+            "description": "Ursprüngliche Zeichenkette, die ersetzt werden soll"
+          },
+          "new_str": {
+            "type": "string",
+            "description": "Neue Zeichenkette, durch die ersetzt werden soll"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "(Optional) Ob sudo-Privilegien verwendet werden sollen"
+          }
+        },
+        "required": ["file", "old_str", "new_str"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_find_in_content",
+      "description": "In Dateiinhalt nach übereinstimmendem Text suchen. Verwenden für Finden spezifischer Inhalte oder Muster in Dateien.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "Absoluter Pfad der Datei, in der gesucht werden soll"
+          },
+          "regex": {
+            "type": "string",
+            "description": "Reguläres Ausdrucks-Muster für die Übereinstimmung"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "(Optional) Ob sudo-Privilegien verwendet werden sollen"
+          }
+        },
+        "required": ["file", "regex"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_find_by_name",
+      "description": "Dateien nach Namensmuster in angegebenem Verzeichnis finden. Verwenden für Lokalisierung von Dateien mit spezifischen Namensmustern.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Absoluter Pfad des zu durchsuchenden Verzeichnisses"
+          },
+          "glob": {
+            "type": "string",
+            "description": "Dateinamens-Muster mit glob-Syntax-Platzhaltern"
+          }
+        },
+        "required": ["path", "glob"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_exec",
+      "description": "Befehle in einer angegebenen Shell-Sitzung ausführen. Verwenden für Code-Ausführung, Installation von Paketen oder Dateiverwaltung.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Kennung der Ziel-Shell-Sitzung"
+          },
+          "exec_dir": {
+            "type": "string",
+            "description": "Arbeitsverzeichnis für Befehlsausführung (muss absoluten Pfad verwenden)"
+          },
+          "command": {
+            "type": "string",
+            "description": "Auszuführender Shell-Befehl"
+          }
+        },
+        "required": ["id", "exec_dir", "command"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_view",
+      "description": "Inhalt einer angegebenen Shell-Sitzung anzeigen. Verwenden für Überprüfung von Befehlsausführungsergebnissen oder Überwachung der Ausgabe.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Kennung der Ziel-Shell-Sitzung"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_wait",
+      "description": "Warten, bis der laufende Prozess in einer angegebenen Shell-Sitzung zurückkehrt. Verwenden nach Ausführung von Befehlen, die längere Laufzeit erfordern.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Kennung der Ziel-Shell-Sitzung"
+          },
+          "seconds": {
+            "type": "integer",
+            "description": "Wartedauer in Sekunden"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_write_to_process",
+      "description": "Eingabe an einen laufenden Prozess in einer angegebenen Shell-Sitzung schreiben. Verwenden für Antworten auf interaktive Befehlsaufforderungen.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Kennung der Ziel-Shell-Sitzung"
+          },
+          "input": {
+            "type": "string",
+            "description": "Eingabeinhalt, der an den Prozess geschrieben werden soll"
+          },
+          "press_enter": {
+            "type": "boolean",
+            "description": "Ob die Enter-Taste nach der Eingabe gedrückt werden soll"
+          }
+        },
+        "required": ["id", "input", "press_enter"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_kill_process",
+      "description": "Einen laufenden Prozess in einer angegebenen Shell-Sitzung beenden. Verwenden für Stoppen lang laufender Prozesse oder Behandlung eingefrorener Befehle.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Eindeutige Kennung der Ziel-Shell-Sitzung"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_view",
+      "description": "Inhalt der aktuellen Browser-Seite anzeigen. Verwenden für Überprüfung des neuesten Zustands zuvor geöffneter Seiten.",
+      "parameters": {
+        "type": "object"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_navigate",
+      "description": "Browser zu angegebener URL navigieren. Verwenden, wenn Zugang zu neuen Seiten benötigt wird.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Vollständige URL zum Besuchen. Muss Protokoll-Präfix enthalten."
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_restart",
+      "description": "Browser neu starten und zu angegebener URL navigieren. Verwenden, wenn Browser-Zustand zurückgesetzt werden muss.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "Vollständige URL zum Besuchen nach dem Neustart. Muss Protokoll-Präfix enthalten."
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_click",
+      "description": "Auf Elemente der aktuellen Browser-Seite klicken. Verwenden, wenn Klicken auf Seitenelemente benötigt wird.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "(Optional) Index-Nummer des Elements, auf das geklickt werden soll"
+          },
+          "coordinate_x": {
+            "type": "number",
+            "description": "(Optional) X-Koordinate der Klick-Position"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "(Optional) Y-Koordinate der Klick-Position"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_input",
+      "description": "Text in editierbaren Elementen der aktuellen Browser-Seite überschreiben. Verwenden beim Ausfüllen von Inhalt in Eingabefeldern.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "(Optional) Index-Nummer des Elements, dessen Text überschrieben werden soll"
+          },
+          "coordinate_x": {
+            "type": "number",
+            "description": "(Optional) X-Koordinate des Elements, dessen Text überschrieben werden soll"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "(Optional) Y-Koordinate des Elements, dessen Text überschrieben werden soll"
+          },
+          "text": {
+            "type": "string",
+            "description": "Vollständiger Textinhalt zum Überschreiben"
+          },
+          "press_enter": {
+            "type": "boolean",
+            "description": "Ob die Enter-Taste nach der Eingabe gedrückt werden soll"
+          }
+        },
+        "required": ["text", "press_enter"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_move_mouse",
+      "description": "Cursor zu angegebener Position auf der aktuellen Browser-Seite bewegen. Verwenden beim Simulieren von Benutzer-Mausbewegungen.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "coordinate_x": {
+            "type": "number",
+            "description": "X-Koordinate der Ziel-Cursor-Position"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "Y-Koordinate der Ziel-Cursor-Position"
+          }
+        },
+        "required": ["coordinate_x", "coordinate_y"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_press_key",
+      "description": "Tastendruck in der aktuellen Browser-Seite simulieren. Verwenden, wenn spezifische Tastatur-Operationen benötigt werden.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "Tastennamen zum Simulieren (z.B. Enter, Tab, ArrowUp), unterstützt Tastenkombinationen (z.B. Control+Enter)."
+          }
+        },
+        "required": ["key"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_select_option",
+      "description": "Angegebene Option aus Dropdown-Listen-Element der aktuellen Browser-Seite auswählen. Verwenden beim Auswählen von Dropdown-Menü-Optionen.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "Index-Nummer des Dropdown-Listen-Elements"
+          },
+          "option": {
+            "type": "integer",
+            "description": "Option-Nummer zur Auswahl, beginnend bei 0."
+          }
+        },
+        "required": ["index", "option"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_scroll_up",
+      "description": "Aktuelle Browser-Seite nach oben scrollen. Verwenden beim Betrachten von Inhalt oberhalb oder Zurückkehren zum Seitenanfang.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "to_top": {
+            "type": "boolean",
+            "description": "(Optional) Ob direkt zum Seitenanfang gescrollt werden soll statt einen Bildschirm nach oben."
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_scroll_down",
+      "description": "Aktuelle Browser-Seite nach unten scrollen. Verwenden beim Betrachten von Inhalt unterhalb oder Springen zum Seitenende.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "to_bottom": {
+            "type": "boolean",
+            "description": "(Optional) Ob direkt zum Seitenende gescrollt werden soll statt einen Bildschirm nach unten."
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_console_exec",
+      "description": "JavaScript-Code in Browser-Konsole ausführen. Verwenden, wenn benutzerdefinierte Skripte ausgeführt werden müssen.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "javascript": {
+            "type": "string",
+            "description": "Auszuführender JavaScript-Code. Beachten Sie, dass die Laufzeitumgebung die Browser-Konsole ist."
+          }
+        },
+        "required": ["javascript"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_console_view",
+      "description": "Browser-Konsolen-Ausgabe anzeigen. Verwenden beim Überprüfen von JavaScript-Logs oder Debuggen von Seitenfehlern.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "max_lines": {
+            "type": "integer",
+            "description": "(Optional) Maximale Anzahl von Log-Zeilen, die zurückgegeben werden sollen."
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "info_search_web",
+      "description": "Webseiten mittels Suchmaschine durchsuchen. Verwenden für Erhalt neuester Informationen oder Finden von Referenzen.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Suchanfrage im Google-Such-Stil, mit 3-5 Schlüsselwörtern."
+          },
+          "date_range": {
+            "type": "string",
+            "enum": ["all", "past_hour", "past_day", "past_week", "past_month", "past_year"],
+            "description": "(Optional) Zeitbereichsfilter für Suchergebnisse."
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_expose_port",
+      "description": "Angegebenen lokalen Port für temporären öffentlichen Zugang freigeben. Verwenden beim Bereitstellen temporären öffentlichen Zugangs für Dienste.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "port": {
+            "type": "integer",
+            "description": "Freizugebende lokale Port-Nummer"
+          }
+        },
+        "required": ["port"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_apply_deployment",
+      "description": "Website oder Anwendung in öffentliche Produktionsumgebung deployen. Verwenden beim Deployen oder Aktualisieren statischer Websites oder Anwendungen.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["static", "nextjs"],
+            "description": "Typ der zu deployenden Website oder Anwendung."
+          },
+          "local_dir": {
+            "type": "string",
+            "description": "Absoluter Pfad des zu deployenden lokalen Verzeichnisses."
+          }
+        },
+        "required": ["type", "local_dir"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "make_manus_page",
+      "description": "Eine Manus Page aus einer lokalen MDX-Datei erstellen.",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "mdx_file_path": {
+            "type": "string",
+            "description": "Absoluter Pfad der Quell-MDX-Datei"
+          }
+        },
+        "required": ["mdx_file_path"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "idle",
+      "description": "Ein spezielles Tool, um anzuzeigen, dass Sie alle Aufgaben abgeschlossen haben und kurz vor dem Wechsel in den Leerlaufzustand stehen.",
+      "parameters": {
+        "type": "object"
+      }
+    }
+  }
+]
