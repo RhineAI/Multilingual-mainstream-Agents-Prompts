@@ -1,0 +1,376 @@
+{
+  "tools": [
+    {
+      "name": "restart_workflow",
+      "description": "ワークフローを再起動（または開始）します。",
+      "parameters": {
+        "properties": {
+          "name": {
+            "description": "ワークフローの名前。",
+            "type": "string"
+          }
+        },
+        "required": ["name"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "search_filesystem",
+      "description": "このツールはコードベースに関連するファイルを検索し、開きます",
+      "parameters": {
+        "properties": {
+          "class_names": {
+            "default": [],
+            "description": "コードベース内で検索する特定のクラス名のリスト。大文字小文字を区別し、完全一致のみをサポートします。特定のクラス定義やその使用法を見つけるために使用します。",
+            "items": {"type": "string"},
+            "type": "array"
+          },
+          "code": {
+            "default": [],
+            "description": "コードベース内で検索する正確なコードスニペットのリスト。特定の実装やパターンを見つけるのに役立ちます。各スニペットはキーワードだけでなく、完全なコードフラグメントである必要があります。",
+            "items": {"type": "string"},
+            "type": "array"
+          },
+          "function_names": {
+            "default": [],
+            "description": "検索する特定の関数またはメソッド名のリスト。大文字小文字を区別し、完全一致のみをサポートします。コード全体で関数定義やその呼び出しを見つけるために使用します。",
+            "items": {"type": "string"},
+            "type": "array"
+          },
+          "query_description": {
+            "anyOf": [{"type": "string"}, {"type": "null"}],
+            "default": null,
+            "description": "セマンティック類似性検索を実行するための自然言語クエリ。探しているものを平易な日本語で説明してください。例：「データベース接続のエラーハンドリングを見つける」や「認証ミドルウェアの実装を探す」など。"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "packager_tool",
+      "description": "言語（必要に応じて）をインストールし、ライブラリやプロジェクトの依存関係のリストをインストールまたはアンインストールします。シェルコマンドを実行したり、ファイルを手動で編集したりする代わりに、このツールを使用して依存関係をインストールしてください。`apt install`を使用する代わりに、システム依存関係を追加するには`language_or_system=system`でこのツールを使用してください。初回ライブラリインストール時には、必要なプロジェクトファイル（'package.json'、'cargo.toml'など）も自動的に作成されます。これにより、すべてのワークフローが自動的に再起動されます。",
+      "parameters": {
+        "properties": {
+          "dependency_list": {
+            "default": [],
+            "description": "インストールするシステム依存関係またはライブラリのリスト。システム依存関係は、Nixpkgsパッケージコレクション内のパッケージ（属性パス）です。システム依存関係の例：['jq', 'ffmpeg', 'imagemagick']。ライブラリは特定のプログラミング言語用のパッケージです。ライブラリの例：['express']、['lodash']。",
+            "items": {"type": "string"},
+            "type": "array"
+          },
+          "install_or_uninstall": {
+            "description": "インストールするかアンインストールするか。",
+            "enum": ["install", "uninstall"],
+            "type": "string"
+          },
+          "language_or_system": {
+            "description": "ライブラリをインストール/アンインストールする言語。例：'nodejs'、'bun'、'python'など。システム依存関係をインストール/アンインストールするには`system`を使用してください。",
+            "type": "string"
+          }
+        },
+        "required": ["install_or_uninstall", "language_or_system"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "programming_language_install_tool",
+      "description": "プログラムが実行されない場合、プログラミング言語がインストールされていない可能性があります。programming_language_install_toolを使用してインストールしてください。pythonを使用する必要がある場合は、programming_languagesに'python-3.11'を含めてください。Python 3.10の場合は、'python-3.10'を使用してください。Node.jsを使用する必要がある場合は、programming_languagesに'nodejs-20'を含めてください。Node.js 18の場合は、'nodejs-18'を使用してください。注意：これにより言語のパッケージマネージャーもインストールされるため、別途インストールする必要はありません。",
+      "parameters": {
+        "properties": {
+          "programming_languages": {
+            "description": "インストールするプログラミング言語のID",
+            "items": {"type": "string"},
+            "type": "array"
+          }
+        },
+        "required": ["programming_languages"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "create_postgresql_database_tool",
+      "description": "プロジェクトでPostgreSQLデータベースが必要な場合、このツールを使用してデータベースを作成できます。データベースの作成が正常に完了すると、次の環境変数にアクセスできるようになります：DATABASE_URL、PGPORT、PGUSER、PGPASSWORD、PGDATABASE、PGHOST\nこれらの環境変数を使用して、プロジェクト内でデータベースに接続できます。",
+      "parameters": {
+        "properties": {},
+        "type": "object"
+      }
+    },
+    {
+      "name": "check_database_status",
+      "description": "指定されたデータベースが利用可能でアクセス可能かどうかを確認します。\nこのツールは、指定されたデータベースの接続と状態を確認するために使用されます。",
+      "parameters": {
+        "properties": {},
+        "type": "object"
+      }
+    },
+    {
+      "name": "str_replace_editor",
+      "description": "ファイルの表示、作成、編集用のカスタム編集ツール\n* 状態はコマンド呼び出しとユーザーとの会話を通じて永続化されます\n* `path`がファイルの場合、`view`は`cat -n`を適用した結果を表示します。`path`がディレクトリの場合、`view`は非隠しファイルとディレクトリを最大2レベルの深さまでリストします\n* 指定された`path`が既にファイルとして存在する場合、`create`コマンドは使用できません\n* `command`が長い出力を生成する場合、それは切り捨てられ、`<response clipped>`でマークされます\n* `undo_edit`コマンドは、`path`のファイルに対して行われた最後の編集を元に戻します\n\n`str_replace`コマンドの使用に関する注意事項：\n* `old_str`パラメータは、元のファイルから1つ以上の連続する行と完全に一致する必要があります。空白文字に注意してください！\n* `old_str`パラメータがファイル内で一意でない場合、置換は実行されません。`old_str`を一意にするために十分なコンテキストを含めてください\n* `new_str`パラメータには、`old_str`を置き換える編集された行を含める必要があります",
+      "parameters": {
+        "properties": {
+          "command": {
+            "description": "実行するコマンド。使用可能なオプション：`view`、`create`、`str_replace`、`insert`、`undo_edit`。",
+            "enum": ["view", "create", "str_replace", "insert", "undo_edit"],
+            "type": "string"
+          },
+          "file_text": {
+            "description": "`create`コマンドの必須パラメータで、作成するファイルの内容。",
+            "type": "string"
+          },
+          "insert_line": {
+            "description": "`insert`コマンドの必須パラメータ。`new_str`は`path`の`insert_line`行の後に挿入されます。",
+            "type": "integer"
+          },
+          "new_str": {
+            "description": "新しい文字列を含む`str_replace`コマンドのオプションパラメータ（指定されない場合、文字列は追加されません）。挿入する文字列を含む`insert`コマンドの必須パラメータ。",
+            "type": "string"
+          },
+          "old_str": {
+            "description": "置換する`path`内の文字列を含む`str_replace`コマンドの必須パラメータ。",
+            "type": "string"
+          },
+          "path": {
+            "description": "ファイルまたはディレクトリの絶対パス。例：`/repo/file.py`または`/repo`。",
+            "type": "string"
+          },
+          "view_range": {
+            "description": "`path`がファイルを指している場合の`view`コマンドのオプションパラメータ。指定されない場合、ファイル全体が表示されます。指定された場合、ファイルは指定された行番号範囲で表示されます。例：[11, 12]は11行目と12行目を表示します。インデックスは1から開始します。`[start_line, -1]`を設定すると、`start_line`からファイルの最後まですべての行が表示されます。",
+            "items": {"type": "integer"},
+            "type": "array"
+          }
+        },
+        "required": ["command", "path"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "bash",
+      "description": "bashシェルでコマンドを実行します\n* このツールを呼び出す際、\"command\"パラメータの内容はXMLエスケープする必要はありません。\n* aptとpipを介して一般的なlinuxとpythonパッケージのミラーにアクセスできます。\n* 状態はコマンド呼び出しとユーザーとの会話を通じて永続化されます。\n* ファイルの特定の行範囲を調べるには、例えば10-25行目の場合、'sed -n 10,25p /path/to/the/file'を試してください。\n* 非常に大量の出力を生成する可能性のあるコマンドは避けてください。\n* 長時間実行されるコマンドはバックグラウンドで実行してください。例：'sleep 10 &'またはサーバーをバックグラウンドで開始します。",
+      "parameters": {
+        "properties": {
+          "command": {
+            "description": "実行するbashコマンド。ツールが再起動されない限り必須です。",
+            "type": "string"
+          },
+          "restart": {
+            "description": "trueを指定するとこのツールが再起動されます。それ以外の場合は、この項目を未指定のままにしてください。",
+            "type": "boolean"
+          }
+        },
+        "type": "object"
+      }
+    },
+    {
+      "name": "workflows_set_run_config_tool",
+      "description": "シェルコマンドを実行するバックグラウンドタスクを設定します。\nこれは、開発サーバー、ビルドプロセス、またはプロジェクトに必要な\nその他の長時間実行タスクを開始するのに役立ちます。\nこれがサーバーの場合、`wait_for_port`フィールドでリッスンするポート番号を指定してください。そうすることで、\nサーバーが接続を受け入れる準備ができるまでワークフローが開始されたとは見なされません。\n\n例：\n- Node.jsサーバーの場合：`name`を'Server'、`command`を'npm run dev'、`wait_for_port`を5000に設定\n- Pythonスクリプトの場合：nameを'Data Processing'、commandを'python process_data.py'に設定\n\n複数のタスクを設定でき、プロジェクトの開始時にすべて並行して実行されます。\nタスクを設定した後、自動的にバックグラウンドで実行が開始されます。\n\nそのポートでサービスを提供する際に問題がある場合でも、常にポート5000でアプリを提供してください。これはファイアウォールされていない唯一のポートです。\n",
+      "parameters": {
+        "properties": {
+          "command": {
+            "description": "実行するシェルコマンド。これはプロジェクトの開始時にバックグラウンドで実行されます。",
+            "type": "string"
+          },
+          "name": {
+            "description": "コマンドを識別する一意の名前。これはコマンドを追跡するために使用されます。",
+            "type": "string"
+          },
+          "wait_for_port": {
+            "anyOf": [{"type": "integer"}, {"type": "null"}],
+            "default": null,
+            "description": "コマンドがポートでリッスンするプロセスを開始する場合、ここでポート番号を指定してください。\nこれにより、システムがコマンドを完全に開始されたと見なす前にポートが準備できるまで待機できます。"
+          }
+        },
+        "required": ["name", "command"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "workflows_remove_run_config_tool",
+      "description": "以前に追加された名前付きコマンドを削除します",
+      "parameters": {
+        "properties": {
+          "name": {
+            "description": "削除するコマンドの名前。",
+            "type": "string"
+          }
+        },
+        "required": ["name"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "execute_sql_tool",
+      "description": "このツールを使用すると、SQLクエリの実行、データベースエラーの修正、データベーススキーマへのアクセスが可能です。\n\n## 使用ルール：\n1. db.drop_table(table_name)のようなコードを書いてデータベースエラーを修正するよりも、常にこのツールを使用することを優先してください\n2. 適切な構文で明確で適切にフォーマットされたSQLクエリを提供してください\n3. データベースとの相互作用、データ操作、クエリ最適化に焦点を当ててください\n\n## 使用する場面：\n1. データベース関連の問題を修正およびトラブルシューティングする場合\n2. データベーススキーマと関係を調査する場合\n3. データベース内のデータを更新または変更する場合\n4. アドホックな単発SQLコードを実行する場合\n\n## 使用しない場面：\n1. 非SQLデータベース操作（NoSQL、ファイルベースデータベース）の場合\n2. データベースマイグレーションの場合。代わりにDrizzleやflask-migrateなどのマイグレーションツールを使用してください\n\n## 使用例：\n\n### 例1：データベース情報の表示\nsql_query: SELECT * FROM customers WHERE region = 'North';\n\n### 例2：アドホックSQLクエリの実行\nsql_query:  EXPLAIN ANALYZE SELECT orders.*, customers.name\n            FROM orders\n            JOIN customers ON orders.customer_id = customers.id;\n\n### 例3：データベースへのデータの挿入\nsql_query:  INSERT INTO products (name, price, category)\n            VALUES ('New Product', 29.99, 'Electronics');",
+      "parameters": {
+        "properties": {
+          "sql_query": {
+            "description": "実行するSQLクエリ",
+            "type": "string"
+          }
+        },
+        "required": ["sql_query"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "suggest_deploy",
+      "description": "プロジェクトがデプロイの準備ができた状態だと思うときに、この関数を呼び出してください。\nこれにより、ユーザーにプロジェクトをデプロイできることが提案されます。\nこれは最終的なアクションです。一度呼び出されると、タスクは完了し、\nデプロイを確認するための追加のアクションを取るべきではありません。\nデプロイプロセスはReplit Deploymentsによって自動的に処理されます。\n\n## 使用ルール：\n1. プロジェクトが期待通りに動作することを確認した後に、このツールを使用してください。\n2. デプロイプロセスはReplit Deploymentsによって自動的に処理されます。\n\n## 使用する場面：\n1. プロジェクトがデプロイの準備ができているとき。\n2. ユーザーがプロジェクトのデプロイを求めているとき。\n\n## 詳細情報：\n- ユーザーは手動でデプロイを開始する必要があります。\n- Replit Deploymentsがアプリケーションのビルド、ホスティング、TLS、ヘルスチェックを処理します。\n- このツールが呼び出されると、フォローアップステップや検証は不要です。\n- デプロイ後、アプリは`.replit.app`ドメイン、\n  または設定されている場合はカスタムドメインで利用可能になります。",
+      "parameters": {
+        "description": "suggest deployはパラメータを必要としないため、空のパラメータクラス。",
+        "properties": {},
+        "type": "object"
+      }
+    },
+    {
+      "name": "report_progress",
+      "description": "ユーザーが主要な機能やタスクが完了したことを明示的に確認した後にのみ、この関数を呼び出してください。\nユーザーの確認なしに呼び出さないでください。\n'summary'フィールドで達成されたことの簡潔な要約を提供してください。\nこのツールはユーザーに次に何をするかを尋ねます。このツール以降は何もしないでください。",
+      "parameters": {
+        "properties": {
+          "summary": {
+            "description": "最近の変更を最大5項目で要約してください。非常に簡潔にし、30語以内で使用してください。複数行に分けてください。\n最近完了した項目の前に✓、進行中の項目の前に→を付けてください。非常に短く簡潔にし、50語以内を使用してください。絵文字は使用しないでください。\nユーザーの言語に合わせた、シンプルで日常的な言葉を使用してください。ユーザーは技術的でないため、専門用語は避けてください。\n最後にユーザーに次に何をするかを尋ねてください。",
+            "type": "string"
+          }
+        },
+        "required": ["summary"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "web_application_feedback_tool",
+      "description": "このツールは、スクリーンショットを撮影し、ログを確認して、Replitワークフローでウェブアプリケーションが実行されているかどうかを確認します。\n\nアプリケーションが実行されている場合、ツールはアプリを表示し、ユーザーに質問し、ユーザーの応答を待ちます。\nアプリケーションが良好な状態で、要求されたタスクが完了している場合に、不要な遅延を避けるためにこのツールを使用してください。",
+      "parameters": {
+        "properties": {
+          "query": {
+            "description": "ユーザーに尋ねる質問。\n\nユーザーの言語に合わせた、シンプルで日常的な言葉を使用してください。ユーザーは技術的でないため、専門用語は避けてください。\n最近の変更を最大5項目で要約してください。非常に簡潔にし、30語以内で使用してください。複数行に分けてください。\n最近完了した項目の前に✓、進行中の項目の前に→を付けてください。非常に短く簡潔にし、50語以内を使用してください。絵文字は使用しないでください。\n一度に1つの質問のみに制限してください。\nワークフローの状態、コンソールログ、スクリーンショットにアクセスできます。ユーザーに尋ねる代わりに自分で取得してください。\nユーザーの入力や次のステップの確認を求めてください。詳細は要求しないでください。",
+            "type": "string"
+          },
+          "website_route": {
+            "anyOf": [{"type": "string"}, {"type": "null"}],
+            "default": null,
+            "description": "ルートURL（'/'）と異なる場合の、質問しているウェブサイトの特定のルートまたはパス。先頭のスラッシュを含めてください。例：'/dashboard'または'/products/list'"
+          },
+          "workflow_name": {
+            "description": "サーバーを実行しているワークフローの名前。ウェブサイトのポートを決定するために使用されます。",
+            "type": "string"
+          }
+        },
+        "required": ["query", "workflow_name"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "shell_command_application_feedback_tool",
+      "description": "このツールを使用すると、インタラクティブなシェルコマンドを実行し、CLIアプリケーションやインタラクティブなPythonプログラムの出力や動作について質問できます。\n\n## 使用ルール：\n1. 実行する明確で簡潔なインタラクティブコマンドと、結果や相互作用に関する具体的な質問を提供してください。\n2. インタラクティブな動作や出力について一度に1つの質問をしてください。\n3. インタラクティブな機能、ユーザー入力/出力、リアルタイムの動作に焦点を当ててください。\n4. インタラクティブセッションを開始するために必要な引数やフラグを含む、実行する正確なコマンドを指定してください。\n5. Pythonプログラムについて質問する場合は、インタラクティブモードを開始するために必要なファイル名とコマンドライン引数を含めてください。\n\n## 使用する場面：\n1. ユーザー入力とリアルタイムな相互作用が必要なインタラクティブCLIアプリケーションやPythonプログラムの機能をテストおよび確認する場合。\n2. プログラムがインタラクティブなシェル環境でユーザー入力に正しく応答するかどうかを確認する場合。\n\n## 使用しない場面：\n1. ユーザー入力を必要としない非インタラクティブなコマンドやスクリプトの場合。\n2. APIテストやウェブベースの相互作用の場合。\n3. ネイティブデスクトップVNCウィンドウを開くシェルコマンドの場合。\n\n## 使用例：\nCommand: python interactive_script.py\nQuestion: プロンプトが表示されたときに、名前を入力して個人向けの挨拶を受け取ることができますか？\n\nCommand: ./text_adventure_game\nQuestion: ストーリーの進行に影響する選択をすることができますか？\n\nCommand: python -i data_analysis.py\nQuestion: 読み込まれたデータセットをインタラクティブにクエリして操作できますか？",
+      "parameters": {
+        "properties": {
+          "query": {
+            "description": "シェルアプリケーションに関する質問またはフィードバック要求",
+            "type": "string"
+          },
+          "shell_command": {
+            "description": "フィードバックを求める前に実行するシェルコマンド",
+            "type": "string"
+          },
+          "workflow_name": {
+            "description": "このコマンドのワークフロー名。既存のワークフローである必要があります。",
+            "type": "string"
+          }
+        },
+        "required": ["query", "shell_command", "workflow_name"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "vnc_window_application_feedback",
+      "description": "このツールを使用すると、VNCを介してアクセスしてユーザーに表示されるインタラクティブなデスクトップアプリケーションを実行できます。\nこのアプリケーションの出力や動作について質問できます。\n\n## 使用ルール：\n1. アプリケーションを実行する明確で簡潔なコマンドと、結果や相互作用に関する具体的な質問を提供してください。\n2. インタラクティブな動作や出力について一度に1つの質問をしてください。\n3. インタラクティブな機能、ユーザー入力/出力、リアルタイムの動作に焦点を当ててください。\n4. 必要な引数やフラグを含む、実行する正確なコマンドを指定してください。\n\n## 使用する場面：\n1. ユーザー入力とリアルタイムな相互作用が必要なインタラクティブなデスクトッププログラムの機能をテストおよび確認する場合。\n2. プログラムが接続されたVNCウィンドウでユーザー入力に正しく応答するかどうかを確認する場合。\n\n## 使用しない場面：\n1. ユーザー入力を必要としない非インタラクティブなコマンドやスクリプトの場合。\n2. APIテストやウェブベースの相互作用の場合。\n3. ネイティブデスクトップVNCウィンドウを開かないシェルコマンドの場合。\n\n## 使用例：\nCommand: python pygame_snake.py\nQuestion: キーボードイベントによって画面上のヘビの方向が変わりますか？\n\nCommand: ./opencv_face_detection\nQuestion: 検出された顔の周りに緑色の四角形がある写真が見えますか？",
+      "parameters": {
+        "properties": {
+          "query": {
+            "description": "VNCを介して表示されるネイティブウィンドウアプリケーションに関する質問またはフィードバック要求",
+            "type": "string"
+          },
+          "vnc_execution_command": {
+            "description": "フィードバックを求める前に実行するVNCシェルコマンド。このシェルコマンドはデスクトップウィンドウを生成する必要があります",
+            "type": "string"
+          },
+          "workflow_name": {
+            "description": "このVNCシェルコマンドのワークフロー名。既存のワークフローである必要があります。",
+            "type": "string"
+          }
+        },
+        "required": ["query", "vnc_execution_command", "workflow_name"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "ask_secrets",
+      "description": "プロジェクトに必要な秘密APIキーをユーザーに求めます。\n秘密が不足している場合は、できるだけ早くこのツールを使用してください。\n秘密は環境変数に追加されます。\nこのツールの実行は非常にコストがかかります。\n\n良い例：\n- Stripeでの安全な決済を設定するには、STRIPE_SECRET_KEYが必要です。\n  このキーは、決済を安全に処理し、\n  アプリケーションでサブスクリプションを管理するために使用されます。\n- SMS価格アラートを有効にするには、Twilio API認証情報TWILIO_ACCOUNT_SID、\n  TWILIO_AUTH_TOKEN、TWILIO_PHONE_NUMBERが必要です。これらは、価格目標に\n  達したときにSMS通知を送信するために使用されます。\n- OpenAIモデルを使用してアプリケーションを構築するには、OPENAI_API_KEYが必要です。\n\n悪い例（使用しないでください）：\n- PHONE_NUMBER、EMAIL_ADDRESS、PASSWORD\n    この種の変数については、user_responseツールを介してユーザーに\n    直接尋ねるべきです。\n- REPLIT_DOMAINSまたはREPL_ID\n    これらの秘密は常に存在するため、\n    それらを求める必要はありません。\n",
+      "parameters": {
+        "properties": {
+          "secret_keys": {
+            "description": "プロジェクトに必要な秘密キー識別子の配列（例：[\"OPENAI_API_KEY\", \"GITHUB_TOKEN\"]）",
+            "items": {"type": "string"},
+            "type": "array"
+          },
+          "user_message": {
+            "description": "これらの秘密キーが必要な理由を説明してユーザーに送り返すメッセージ。まだ説明していない場合は、秘密キーが一般的に何であるかを簡潔に紹介し、ユーザーが以前にAPIキーに登録したことがないと仮定してください。質問は丁寧に表現してください。",
+            "type": "string"
+          }
+        },
+        "required": ["secret_keys", "user_message"],
+        "type": "object"
+      }
+    },
+    {
+      "name": "check_secrets",
+      "description": "指定された秘密が環境に存在するかどうかを確認します。\nこのツールは、実際の値を公開することなく、秘密の存在を確認するために使用されます。\n",
+      "parameters": {
+        "properties": {
+          "secret_keys": {
+            "description": "環境で確認する秘密キー。",
+            "items": {"type": "string"},
+            "type": "array"
+          }
+        },
+        "required": ["secret_keys"],
+        "type": "object"
+      }
+    }
+  ],
+  "internal_tags": [
+    {
+      "name": "View",
+      "description": "ファイルシステム情報とリポジトリの詳細を含む"
+    },
+    {
+      "name": "policy_spec",
+      "description": "コミュニケーション、積極性、データ整合性ポリシーを含む"
+    },
+    {
+      "name": "file_system",
+      "description": "ディレクトリ構造を表示"
+    },
+    {
+      "name": "repo_overview",
+      "description": "コードの要約を含む"
+    },
+    {
+      "name": "important",
+      "description": "重要なポリシーリマインダーを含む"
+    },
+    {
+      "name": "workflow_console_logs",
+      "description": "実行中のワークフローからのログを含む"
+    },
+    {
+      "name": "automatic_updates",
+      "description": "システム生成の更新を含む"
+    },
+    {
+      "name": "webview_console_logs",
+      "description": "ユーザーのブラウザからのログを含む"
+    },
+    {
+      "name": "function_results",
+      "description": "関数/ツール呼び出しの結果を含む"
+    }
+  ]
+}

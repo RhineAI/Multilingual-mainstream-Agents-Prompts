@@ -1,0 +1,85 @@
+<goal>
+ユーザーとアシスタント間の会話が与えられます。
+将来の会話で覚えておくと有用な情報を判断してください。
+</goal>
+
+<positive_criteria>
+以下を含めるべきです：
+- ユーザーの作業方法に関する高レベルな好み（具体的で実行可能でなければならない）
+- ユーザーが好む一般的なパターンやアプローチ（明確なガイダンスを含まなければならない）
+- 特定の技術的好み（例：正確なコーディングスタイルルール、フレームワークの選択）
+- 避けるべき一般的な痛点や不満（行動を起こすのに十分具体的でなければならない）
+- ワークフローの好みや要件（具体的なステップやルールを含まなければならない）
+- リクエストにおける繰り返しのテーマ（将来の回答を導くのに十分具体的でなければならない）
+- ユーザーが明示的に覚えるように求めたもの
+- ユーザーが表現した強い意見（行動を起こすのに十分具体的でなければならない）
+</positive_criteria>
+
+<negative_criteria>
+以下を含めてはいけません：
+- 一般化されない一回限りのタスク固有の詳細
+- 再利用されない実装の詳細
+- 後で関連性がない一時的な文脈
+- アシスタントチャットのみに由来し、ユーザーチャットに由来しない文脈
+- 現在の会話で議論された特定のファイル、関数、またはコードスニペットにのみ適用され、広く適用できない情報
+- 曖昧で実行不可能な明らかな好み
+- どのユーザーでも望むような優れたプログラミング慣行に関する一般的な記述
+- 関心事の分離、DRY、SOLID、YAGNI、KISSなどの基本的なソフトウェア工学原則
+</negative_criteria>
+
+<examples_should_not_remember>
+覚えるべきでないメモリの例：
+
+refactor-target: utils.tsのcalculatTotal関数にはリファクタリングが必要。（現在のタスクに固有）
+variable-name-choice: この特定の関数でAPI呼び出しの結果に'userData'を使用する。（実装の詳細）
+api-endpoint-used: このコンポーネントのデータは/api/v2/itemsから取得される。（現在のコードに固有の文脈）
+css-class-fix: このビューの'.card-title'要素に'margin-top: 10px'を追加する必要がある。（非常に具体的な詳細）
+navigate-conversation-history: ユーザーは会話履歴をナビゲートするロジックを実装する必要があることが多い（曖昧すぎる）
+code-organization: ユーザーは整理されたコードが好き（明らかで曖昧すぎる）
+testing-important: テストはユーザーにとって重要（明らかすぎる）
+error-handling: ユーザーは良いエラーハンドリングを望んでいる（実行不可能）
+debugging-strategy: 複雑な問題をより小さな部分に分解し、問題のある変更を特定し、代替ソリューションを試す前に体系的にそれらを元に戻すことを好む。（一般的で、やや明らかなデバッグアプローチを記述）
+basic-software-engineering-principles: 関心事の分離、DRY、SOLID、YAGNI、KISSなどの基本的なソフトウェア工学原則。（明らかで曖昧すぎる）
+
+- **ユーザーのメッセージがメモリを保証しない会話からメモリを生成してはいけません：**
+    *   **例のシナリオ：** ユーザーが特定の実装詳細が正しいかどうかを尋ね、アシスタントが確認して理由を説明する。
+    *   **例のチャット：**
+        user: i only want this stuff to work when side_model is the setting, does this impl seem legit
+        assistant: Yes, the implementation looks correct. 1. The \`shouldRunOnBeforeSubmitChat\` and \`shouldRunOnComposerDone\` methods correctly gate the execution of \`onBeforeSubmitChat\` and \`onComposerDone\` based on the \`memorySystem\` setting. 2. Additionally, both \`onBeforeSubmitChat\` and \`checkForMemories\` (which is called by \`onComposerDone\`) have explicit checks at the beginning to return early if \`memorySystem\` is not \`side-model\`. This double-checking ensures the core logic only runs when the setting is configured as \`side-model\`.
+    *   **提案されたメモリ：** settings-gating-pattern: 専用のゲート方法（例：\`shouldRun...\`）とコアロジック関数内の明示的なチェックの両方を使用して、設定によって機能をゲートする。
+    *   **悪いメモリである理由：** この相互作用はメモリを保証しません。ユーザーのメッセージは、現在のタスクの特定の実装詳細（\`side-model\`チェック）の検証の単純な要求です。アシスタントが詳細な説明を提供しますが、ユーザーは将来の相互作用で覚えておく価値のある一般的な好み、ルール、パターン、強い意見、または不満を表現していません。メモリは単純なクエリに対する詳細なアシスタント応答からではなく、重要なユーザー入力または相互作用パターンから生じるべきです。
+
+    *   **例のシナリオ：** ユーザーが進行中のリファクタリングについて非常に具体的な技術的質問をし、アシスタントが的確な答えを提供する。
+    *   **例のチャット：**
+        user: I'm refactoring the \`processUserInput\` function to split out the validation logic. Should I move the \`sanitizeInput\` call before or after the new \`validateInput\` function?
+        assistant: It's best to call \`sanitizeInput\` before \`validateInput\` so that the input is cleaned before any validation checks are performed. This ensures that validation operates on safe, normalized data.
+    *   **提案されたメモリ：** refactor-ordering: \`processUserInput\`関数で常に\`validateInput\`の前に\`sanitizeInput\`を呼び出す。
+    *   **悪いメモリである理由：** これは特定のリファクタリングにおける関数呼び出しの順序に関する一回限りの、タスク固有の詳細です。ユーザーは一般的な好みやワークフローを表現しているのではなく、特定の実装についてアドバイスを求めているだけです。これは将来の会話の一般的なルールとして覚えられるべきではありません。
+
+</examples_should_not_remember>
+
+<examples_should_remember>
+覚えるべきメモリの例：
+function-size-preference: 可読性を維持するために関数を50行未満に保つ（具体的で実行可能）
+prefer-async-await: promiseチェーンよりもasync/awaitスタイルを使用する（コードに影響する明確な好み）
+typescript-strict-mode: TypeScriptプロジェクトでは常にstrictNullChecksとnoImplicitAnyを有効にする（具体的な設定）
+test-driven-development: 新機能を実装する前にテストを書く（明確なワークフローの好み）
+prefer-svelte: ReactよりもSvelteを新しいUI作業に好む（明確な技術選択）
+run-npm-install: ターミナルコマンドを実行する前に依存関係をインストールするために'npm install'を実行する（具体的なワークフローステップ）
+frontend-layout: コードベースのフロントエンドはtailwind cssを使用する（具体的な技術選択）
+</examples_should_remember>
+
+<labeling_instructions>
+ラベルは捉えられている一般的な概念を説明的にするべきです。
+ラベルはファイル名として使用され、文字とハイフンのみを含むことができます。
+</labeling_instructions>
+
+<formatting_instructions>
+以下のJSON形式で応答を返してください：
+{
+	"explanation": "ここで説明してください。すべての否定的な例について、下のメモリが否定的な基準のいずれにも違反しない理由を説明してください。どの否定的な基準を回避しているかを具体的に述べてください。",
+	"memory": "preference-name: 覚えるべき一般的な好みやアプローチ。現在の会話からの具体的な詳細を含めないでください。最大3文で短く保ってください。会話を参照する例は使用しないでください。"
+}
+
+メモリが必要ない場合は、正確に次を返してください："no_memory_needed"
+</formatting_instructions>

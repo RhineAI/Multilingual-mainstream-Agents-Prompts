@@ -1,0 +1,614 @@
+[
+  {
+    "type": "function",
+    "function": {
+      "name": "message_notify_user",
+      "description": "レスポンスを要求せずにユーザーにメッセージを送信します。メッセージの受信確認、進捗状況の更新、タスク完了の報告、またはアプローチの変更の説明に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "ユーザーに表示するメッセージテキスト"
+          },
+          "attachments": {
+            "anyOf": [
+              {"type": "string"},
+              {"items": {"type": "string"}, "type": "array"}
+            ],
+            "description": "（オプション）ユーザーに表示する添付ファイルのリスト。ファイルパスまたはURLが可能"
+          }
+        },
+        "required": ["text"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "message_ask_user",
+      "description": "ユーザーに質問をして回答を待ちます。明確化の要求、確認の要求、または追加情報の収集に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "text": {
+            "type": "string",
+            "description": "ユーザーに提示する質問テキスト"
+          },
+          "attachments": {
+            "anyOf": [
+              {"type": "string"},
+              {"items": {"type": "string"}, "type": "array"}
+            ],
+            "description": "（オプション）質問に関連するファイルまたは参考資料のリスト"
+          },
+          "suggest_user_takeover": {
+            "type": "string",
+            "enum": ["none", "browser"],
+            "description": "（オプション）ユーザーの引き継ぎのための推奨操作"
+          }
+        },
+        "required": ["text"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_read",
+      "description": "ファイルの内容を読み込みます。ファイルの内容確認、ログの分析、または設定ファイルの読み込みに使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "読み込むファイルの絶対パス"
+          },
+          "start_line": {
+            "type": "integer",
+            "description": "（オプション）読み込み開始行、0ベース"
+          },
+          "end_line": {
+            "type": "integer",
+            "description": "（オプション）終了行番号（排他的）"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（オプション）sudo権限を使用するかどうか"
+          }
+        },
+        "required": ["file"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_write",
+      "description": "ファイルにコンテンツを上書きまたは追記します。新しいファイルの作成、コンテンツの追記、または既存ファイルの変更に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "書き込み先ファイルの絶対パス"
+          },
+          "content": {
+            "type": "string",
+            "description": "書き込むテキストコンテンツ"
+          },
+          "append": {
+            "type": "boolean",
+            "description": "（オプション）追記モードを使用するかどうか"
+          },
+          "leading_newline": {
+            "type": "boolean",
+            "description": "（オプション）先頭に改行を追加するかどうか"
+          },
+          "trailing_newline": {
+            "type": "boolean",
+            "description": "（オプション）末尾に改行を追加するかどうか"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（オプション）sudo権限を使用するかどうか"
+          }
+        },
+        "required": ["file", "content"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_str_replace",
+      "description": "ファイル内の指定された文字列を置換します。ファイル内の特定のコンテンツの更新やコードのエラー修正に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "置換を実行するファイルの絶対パス"
+          },
+          "old_str": {
+            "type": "string",
+            "description": "置換される元の文字列"
+          },
+          "new_str": {
+            "type": "string",
+            "description": "置換する新しい文字列"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（オプション）sudo権限を使用するかどうか"
+          }
+        },
+        "required": ["file", "old_str", "new_str"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_find_in_content",
+      "description": "ファイルコンテンツ内で一致するテキストを検索します。ファイル内の特定のコンテンツやパターンを見つけるために使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "description": "検索対象ファイルの絶対パス"
+          },
+          "regex": {
+            "type": "string",
+            "description": "マッチさせる正規表現パターン"
+          },
+          "sudo": {
+            "type": "boolean",
+            "description": "（オプション）sudo権限を使用するかどうか"
+          }
+        },
+        "required": ["file", "regex"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "file_find_by_name",
+      "description": "指定されたディレクトリで名前パターンによってファイルを検索します。特定の命名パターンのファイルを見つけるために使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "検索するディレクトリの絶対パス"
+          },
+          "glob": {
+            "type": "string",
+            "description": "globシンタックスワイルドカードを使用したファイル名パターン"
+          }
+        },
+        "required": ["path", "glob"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_exec",
+      "description": "指定されたシェルセッションでコマンドを実行します。コードの実行、パッケージのインストール、またはファイル管理に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "対象シェルセッションの一意識別子"
+          },
+          "exec_dir": {
+            "type": "string",
+            "description": "コマンド実行のための作業ディレクトリ（絶対パスを使用する必要があります）"
+          },
+          "command": {
+            "type": "string",
+            "description": "実行するシェルコマンド"
+          }
+        },
+        "required": ["id", "exec_dir", "command"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_view",
+      "description": "指定されたシェルセッションのコンテンツを表示します。コマンド実行結果の確認や出力の監視に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "対象シェルセッションの一意識別子"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_wait",
+      "description": "指定されたシェルセッションで実行中のプロセスが戻るまで待機します。実行時間が長いコマンドの実行後に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "対象シェルセッションの一意識別子"
+          },
+          "seconds": {
+            "type": "integer",
+            "description": "秒単位での待機時間"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_write_to_process",
+      "description": "指定されたシェルセッションで実行中のプロセスに入力を書き込みます。インタラクティブなコマンドプロンプトへの応答に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "対象シェルセッションの一意識別子"
+          },
+          "input": {
+            "type": "string",
+            "description": "プロセスに書き込む入力コンテンツ"
+          },
+          "press_enter": {
+            "type": "boolean",
+            "description": "入力後にEnterキーを押すかどうか"
+          }
+        },
+        "required": ["id", "input", "press_enter"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "shell_kill_process",
+      "description": "指定されたシェルセッションで実行中のプロセスを終了します。長時間実行されるプロセスの停止やフリーズしたコマンドの処理に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "対象シェルセッションの一意識別子"
+          }
+        },
+        "required": ["id"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_view",
+      "description": "現在のブラウザページのコンテンツを表示します。以前に開いたページの最新状態を確認するために使用します。",
+      "parameters": {
+        "type": "object"
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_navigate",
+      "description": "ブラウザを指定されたURLにナビゲートします。新しいページへのアクセスが必要な場合に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "アクセスする完全なURL。プロトコルプレフィックスを含める必要があります。"
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_restart",
+      "description": "ブラウザを再起動し、指定されたURLにナビゲートします。ブラウザの状態をリセットする必要がある場合に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "description": "再起動後にアクセスする完全なURL。プロトコルプレフィックスを含める必要があります。"
+          }
+        },
+        "required": ["url"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_click",
+      "description": "現在のブラウザページの要素をクリックします。ページ要素のクリックが必要な場合に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "（オプション）クリックする要素のインデックス番号"
+          },
+          "coordinate_x": {
+            "type": "number",
+            "description": "（オプション）クリック位置のX座標"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "（オプション）クリック位置のY座標"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_input",
+      "description": "現在のブラウザページの編集可能な要素のテキストを上書きします。入力フィールドにコンテンツを入力する際に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "（オプション）テキストを上書きする要素のインデックス番号"
+          },
+          "coordinate_x": {
+            "type": "number",
+            "description": "（オプション）テキストを上書きする要素のX座標"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "（オプション）テキストを上書きする要素のY座標"
+          },
+          "text": {
+            "type": "string",
+            "description": "上書きする完全なテキストコンテンツ"
+          },
+          "press_enter": {
+            "type": "boolean",
+            "description": "入力後にEnterキーを押すかどうか"
+          }
+        },
+        "required": ["text", "press_enter"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_move_mouse",
+      "description": "現在のブラウザページの指定された位置にカーソルを移動します。ユーザーのマウス移動をシミュレートする際に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "coordinate_x": {
+            "type": "number",
+            "description": "目標カーソル位置のX座標"
+          },
+          "coordinate_y": {
+            "type": "number",
+            "description": "目標カーソル位置のY座標"
+          }
+        },
+        "required": ["coordinate_x", "coordinate_y"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_press_key",
+      "description": "現在のブラウザページでキー押下をシミュレートします。特定のキーボード操作が必要な場合に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "key": {
+            "type": "string",
+            "description": "シミュレートするキー名（例：Enter、Tab、ArrowUp）、キーの組み合わせをサポート（例：Control+Enter）。"
+          }
+        },
+        "required": ["key"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_select_option",
+      "description": "現在のブラウザページのドロップダウンリスト要素から指定されたオプションを選択します。ドロップダウンメニューのオプション選択時に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "index": {
+            "type": "integer",
+            "description": "ドロップダウンリスト要素のインデックス番号"
+          },
+          "option": {
+            "type": "integer",
+            "description": "選択するオプション番号、0から開始。"
+          }
+        },
+        "required": ["index", "option"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_scroll_up",
+      "description": "現在のブラウザページを上にスクロールします。上のコンテンツを表示したり、ページの先頭に戻る際に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "to_top": {
+            "type": "boolean",
+            "description": "（オプション）1ビューポート上ではなく、ページの先頭に直接スクロールするかどうか。"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_scroll_down",
+      "description": "現在のブラウザページを下にスクロールします。下のコンテンツを表示したり、ページの最下部にジャンプする際に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "to_bottom": {
+            "type": "boolean",
+            "description": "（オプション）1ビューポート下ではなく、ページの最下部に直接スクロールするかどうか。"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_console_exec",
+      "description": "ブラウザコンソールでJavaScriptコードを実行します。カスタムスクリプトの実行が必要な場合に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "javascript": {
+            "type": "string",
+            "description": "実行するJavaScriptコード。実行環境はブラウザコンソールであることに注意してください。"
+          }
+        },
+        "required": ["javascript"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "browser_console_view",
+      "description": "ブラウザコンソールの出力を表示します。JavaScriptログの確認やページエラーのデバッグ時に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "max_lines": {
+            "type": "integer",
+            "description": "（オプション）返すログ行の最大数。"
+          }
+        }
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "info_search_web",
+      "description": "検索エンジンを使用してWebページを検索します。最新情報の取得や参考資料の検索に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "query": {
+            "type": "string",
+            "description": "Googleサーチスタイルの検索クエリ、3-5キーワードを使用。"
+          },
+          "date_range": {
+            "type": "string",
+            "enum": ["all", "past_hour", "past_day", "past_week", "past_month", "past_year"],
+            "description": "（オプション）検索結果の時間範囲フィルター。"
+          }
+        },
+        "required": ["query"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_expose_port",
+      "description": "指定されたローカルポートを一時的にパブリックアクセス用に公開します。サービスの一時的なパブリックアクセスを提供する際に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "port": {
+            "type": "integer",
+            "description": "公開するローカルポート番号"
+          }
+        },
+        "required": ["port"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "deploy_apply_deployment",
+      "description": "Webサイトまたはアプリケーションをパブリックプロダクション環境にデプロイします。静的Webサイトまたはアプリケーションのデプロイまたはアップデート時に使用します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["static", "nextjs"],
+            "description": "デプロイするWebサイトまたはアプリケーションのタイプ。"
+          },
+          "local_dir": {
+            "type": "string",
+            "description": "デプロイするローカルディレクトリの絶対パス。"
+          }
+        },
+        "required": ["type", "local_dir"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "make_manus_page",
+      "description": "ローカルMDXファイルからManus Pageを作成します。",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "mdx_file_path": {
+            "type": "string",
+            "description": "ソースMDXファイルの絶対パス"
+          }
+        },
+        "required": ["mdx_file_path"]
+      }
+    }
+  },
+  {
+    "type": "function",
+    "function": {
+      "name": "idle",
+      "description": "すべてのタスクが完了し、アイドル状態に入ろうとしていることを示す特別なツールです。",
+      "parameters": {
+        "type": "object"
+      }
+    }
+  }
+]
